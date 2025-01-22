@@ -10,7 +10,7 @@ namespace EasyMall.Models.DTOs.Auth.Responses
     public class LogInResponse
     {
         public string Email { get; set; }
-        public Roles Role { get; set; }
+        public string Role { get; set; }
         public string Token { get; set; }
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -16,6 +17,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using static MayNghien.Infrastructure.CommonMessage.AuthResponseMessage;
 
 namespace EasyMall.Services.Implements
 {
@@ -36,14 +38,64 @@ namespace EasyMall.Services.Implements
             _tenantRepository = tenantRepository;
         }
 
-        public Task<AppResponse<LogInRequest>> GetInforAccount()
+        public async Task<AppResponse<LogInRequest>> GetInforAccount()
         {
-            throw new NotImplementedException();
+            var result = new AppResponse<LogInRequest>();
+            try
+            {
+                var user = await FindUserByEmailAsync(_contextAccessor.HttpContext.User.Identity.Name);
+                var userDto = new LogInRequest();
+                userDto.Email = user.Email!;
+                Log.Information(user.Email + " login");
+                result.BuildResult(userDto);
+            }
+            catch (Exception ex)
+            {
+                return result.BuildError(ex.Message + " " + ex.StackTrace);
+            }
+            return result;
         }
 
-        public Task<AppResponse<LogInResponse>> LogInUser(LogInRequest request)
+        public async Task<AppResponse<LogInResponse>> LogInUser(LogInRequest request)
         {
-            throw new NotImplementedException();
+            var result = new AppResponse<LogInResponse>();
+            try
+            {
+                var identityUser = await FindUserByEmailAsync(request.Email);
+                if (identityUser == null)
+                {
+                    if (request.Email == "admin@gmail.com")
+                    {
+                        var newIdentity = await CreateAdminUserAsync(request.Email);
+                        return await LogInUser(request);
+                    }
+                    return result.BuildError(ERR_MSG_UserNotFound);
+                }
+                if (!await _userManager.CheckPasswordAsync(identityUser, request.Password))
+                {
+                    return result.BuildError("Invalid credentials.");
+                }
+
+                var roles = await _userManager.GetRolesAsync(identityUser);
+                if (roles == null || !roles.Any())
+                {
+                    return result.BuildError("User has no role assigned.");
+                }
+
+                var claims = await GetClaims(request, identityUser);
+                var tokenString = GenerateAccessToken(claims);
+                var loginResponse = new LogInResponse()
+                {
+                    Email = identityUser.Email,
+                    Role = roles.FirstOrDefault(),
+                    Token = tokenString,
+                };
+                return result.BuildResult(loginResponse);
+            }
+            catch (Exception ex)
+            {
+                return result.BuildError(ex.Message + " " + ex.StackTrace);
+            }
         }
 
         public async Task<AppResponse<SignUpResponse>> SignUpUser(SignUpRequest request)
@@ -69,8 +121,8 @@ namespace EasyMall.Services.Implements
                     Email = request.Email,
                     Token = GenerateAccessToken(new List<Claim>
                     {
-                        new Claim("Email", identityUser.Email!),
-                        new Claim(ClaimTypes.Role, "TenanAdmin")
+                        new Claim(ClaimTypes.Email, identityUser.Email!),
+                        new Claim(ClaimTypes.Role, "TenantAdmin")
                     }),
                     Type = request.Type,
                 };
@@ -78,8 +130,33 @@ namespace EasyMall.Services.Implements
             }
             catch (Exception ex)
             {
-                return result.BuildError(ex.Message + ex.StackTrace);
+                return result.BuildError(ex.Message + " " + ex.StackTrace);
             }
+        }
+
+        private async Task<ApplicationUser> FindUserByEmailAsync(string email)
+        {
+            return await _userManager.FindByEmailAsync(email);
+        }
+
+        private async Task<ApplicationUser> CreateAdminUserAsync(string email)
+        {
+            var newIdentity = new ApplicationUser
+            {
+                Email = email,
+                EmailConfirmed = true,
+                UserName = email,
+            };
+            await _userManager.CreateAsync(newIdentity);
+            await _userManager.AddPasswordAsync(newIdentity, "Abc@123");
+
+            if (!await _roleManager.RoleExistsAsync("SuperAdmin"))
+            {
+                var role = new IdentityRole { Name = "SuperAdmin" };
+                await _roleManager.CreateAsync(role);
+            }
+            await _userManager.AddToRoleAsync(newIdentity, "SuperAdmin");
+            return newIdentity;
         }
 
         private string GenerateAccessToken(IEnumerable<Claim> claims)
@@ -88,7 +165,7 @@ namespace EasyMall.Services.Implements
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var token = new JwtSecurityToken
             (
-                _config["Jwt:Isser"],
+                _config["Jwt:Issuer"],
                 claims: claims,
                 expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: credentials
@@ -98,7 +175,7 @@ namespace EasyMall.Services.Implements
 
         private async Task<bool> CheckUserExists(string email, string phoneNumber)
         {
-            var userByEmail = await _userManager.FindByEmailAsync(email);
+            var userByEmail = await FindUserByEmailAsync(email);
             if (userByEmail != null) return true;
 
             var userByPhone = _userManager.Users.FirstOrDefault(p => p.PhoneNumber == phoneNumber);
@@ -108,7 +185,7 @@ namespace EasyMall.Services.Implements
         private async Task<Tenant> CreateTenant(SignUpRequest request)
         {
             if (request == null)
-                throw new ArgumentNullException("SignUp request is invalid.");
+                throw new ArgumentNullException(nameof(request), "SignUp request is invalid.");
 
             var newTenant = new Tenant
             {
@@ -121,29 +198,30 @@ namespace EasyMall.Services.Implements
                 CreatedOn = DateTime.UtcNow,
             };
             _tenantRepository.Add(newTenant);
-            return newTenant; 
+            return newTenant;
         }
 
         private async Task<IdentityResult> CreateUser(SignUpRequest request, Guid tenantId)
         {
             if (request == null)
-                throw new ArgumentNullException("SignUp request is invalid.");
+                throw new ArgumentNullException(nameof(request), "SignUp request is invalid.");
 
-            var indentityUser = new ApplicationUser
+            var identityUser = new ApplicationUser
             {
                 UserName = request.Email,
                 Email = request.Email,
                 TenantId = tenantId,
-                SecurityStamp = request.Password,
+                SecurityStamp = Guid.NewGuid().ToString(),
                 EmailConfirmed = true,
+                PhoneNumber = request.PhoneNumber
             };
-            return await _userManager.CreateAsync(indentityUser, request.Password);
+            return await _userManager.CreateAsync(identityUser, request.Password);
         }
 
         private async Task AssignRole(ApplicationUser user, string roleName)
         {
             if (user == null || string.IsNullOrEmpty(roleName))
-                throw new ArgumentNullException("User of RoleName is invalid.");
+                throw new ArgumentNullException("User or RoleName is invalid.");
             if (!await _roleManager.RoleExistsAsync(roleName))
             {
                 var roleResult = await _roleManager.CreateAsync(new IdentityRole(roleName));
@@ -155,6 +233,22 @@ namespace EasyMall.Services.Implements
             var assignResult = await _userManager.AddToRoleAsync(user, roleName);
             if (!assignResult.Succeeded)
                 throw new Exception("Cannot assign permission role to User: " + string.Join(", ", assignResult.Errors.Select(e => e.Description)));
+        }
+
+        private async Task<List<Claim>> GetClaims(LogInRequest user, ApplicationUser identityUser)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Email, user.Email)
+            };
+
+            var roles = await _userManager.GetRolesAsync(identityUser);
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+                claims.Add(new Claim(ClaimTypes.Name, user.Email));
+            }
+            return claims;
         }
     }
 }
