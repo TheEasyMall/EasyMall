@@ -43,7 +43,7 @@ namespace EasyMall.Services.Implements
             var result = new AppResponse<LogInRequest>();
             try
             {
-                var user = await FindUserByEmailAsync(_contextAccessor.HttpContext.User.Identity.Name);
+                var user = await FindUserByEmailAsync(_contextAccessor.HttpContext?.User.Identity?.Name!);
                 var userDto = new LogInRequest();
                 userDto.Email = user.Email!;
                 Log.Information(user.Email + " login");
@@ -86,8 +86,8 @@ namespace EasyMall.Services.Implements
                 var tokenString = GenerateAccessToken(claims);
                 var loginResponse = new LogInResponse()
                 {
-                    Email = identityUser.Email,
-                    Role = roles.FirstOrDefault(),
+                    Email = identityUser.Email!,
+                    Role = roles.FirstOrDefault()!,
                     Token = tokenString,
                 };
                 return result.BuildResult(loginResponse);
@@ -136,7 +136,7 @@ namespace EasyMall.Services.Implements
 
         private async Task<ApplicationUser> FindUserByEmailAsync(string email)
         {
-            return await _userManager.FindByEmailAsync(email);
+            return await _userManager.FindByEmailAsync(email) ?? throw new Exception("Email not found.");
         }
 
         private async Task<ApplicationUser> CreateAdminUserAsync(string email)

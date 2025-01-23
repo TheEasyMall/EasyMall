@@ -13,5 +13,7 @@ namespace EasyMall.Models.DTOs
         public string Description { get; set; }
         public bool IsPresent { get; set; }
         public Guid? TenantId { get; set; }
+
+        public List<ProductDTO>? Products { get; set; }
     }
 }
