@@ -19,6 +19,14 @@ namespace EasyMall.API.Controllers
         }
 
         [HttpGet]
+        [Route("present")]
+        public IActionResult GetByPresent()
+        {
+            var result = _categoryService.GetByPresent();
+            return Ok(result);
+        }
+
+        [HttpGet]
         public IActionResult GetById(Guid id)
         {
             var result = _categoryService.GetById(id);

@@ -10,9 +10,10 @@ namespace EasyMall.Services.Interfaces
 {
     public interface ICategoryService
     {
+        AppResponse<List<CategoryDTO>> GetByPresent();
+        AppResponse<CategoryDTO> GetById(Guid id);
         Task<AppResponse<CategoryDTO>> Create(CategoryDTO request);
         AppResponse<CategoryDTO> Update(CategoryDTO request);
         AppResponse<string> Delete(Guid id);
-        AppResponse<CategoryDTO> GetById(Guid id);
     }
 }

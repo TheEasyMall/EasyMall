@@ -38,15 +38,34 @@ namespace EasyMall.Services.Implements
             _userManager = userManager;
         }
 
+        public AppResponse<List<CategoryDTO>> GetByPresent()
+        {
+            var result = new AppResponse<List<CategoryDTO>>();
+            try
+            {
+                var categories = _categoryRepository.FindBy(x => x.IsPresent == true).Include(x => x.Products).ToList();
+                var dtos = _mapper.Map<List<CategoryDTO>>(categories);
+                if (categories == null || !categories.Any())
+                    result.BuildError("Category not found");
+                else
+                    result.BuildResult(dtos);
+            }
+            catch (Exception ex)
+            {
+                result.BuildError(ex.Message + " " + ex.StackTrace);
+            }
+            return result;
+        }
+
         public AppResponse<CategoryDTO> GetById(Guid id)
         {
             var result = new AppResponse<CategoryDTO>();
             try
             {
                 var category = _categoryRepository.FindBy(x => x.Id == id).Include(x => x.Products).First();
-                if (category == null || category.IsDeleted == true)
-                    return result.BuildError("Category not found");
                 var dto = _mapper.Map<CategoryDTO>(category);
+                if (category == null || category.IsDeleted == true)
+                    result.BuildError("Category not found");
                 result.BuildResult(dto);
             }
             catch (Exception ex)
