@@ -12,6 +12,7 @@ namespace EasyMall.Services.Interfaces
     {
         Task<AppResponse<CategoryDTO>> Create(CategoryDTO request);
         AppResponse<CategoryDTO> Update(CategoryDTO request);
-        AppResponse<CategoryDTO> Delete(Guid id);
+        AppResponse<string> Delete(Guid id);
+        AppResponse<CategoryDTO> GetById(Guid id);
     }
 }

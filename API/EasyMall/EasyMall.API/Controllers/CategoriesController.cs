@@ -18,6 +18,13 @@ namespace EasyMall.API.Controllers
             _categoryService = categoryService;
         }
 
+        [HttpGet]
+        public IActionResult GetById(Guid id)
+        {
+            var result = _categoryService.GetById(id);
+            return Ok(result);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create(CategoryDTO request)
         {
@@ -29,6 +36,13 @@ namespace EasyMall.API.Controllers
         public IActionResult Update(CategoryDTO request)
         {
             var result = _categoryService.Update(request);
+            return Ok(result);
+        }
+
+        [HttpDelete]
+        public IActionResult Delete(Guid id)
+        {
+            var result = _categoryService.Delete(id);
             return Ok(result);
         }
     }

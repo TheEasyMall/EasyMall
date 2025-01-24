@@ -38,6 +38,24 @@ namespace EasyMall.Services.Implements
             _userManager = userManager;
         }
 
+        public AppResponse<CategoryDTO> GetById(Guid id)
+        {
+            var result = new AppResponse<CategoryDTO>();
+            try
+            {
+                var category = _categoryRepository.FindBy(x => x.Id == id).Include(x => x.Products).First();
+                if (category == null || category.IsDeleted == true)
+                    return result.BuildError("Category not found");
+                var dto = _mapper.Map<CategoryDTO>(category);
+                result.BuildResult(dto);
+            }
+            catch (Exception ex)
+            {
+                result.BuildError(ex.Message + " " + ex.StackTrace);
+            }
+            return result;
+        }
+
         public async Task<AppResponse<CategoryDTO>> Create(CategoryDTO request)
         {
             var result = new AppResponse<CategoryDTO>();
@@ -68,17 +86,32 @@ namespace EasyMall.Services.Implements
                 }
 
                 _categoryRepository.AddProductToCategory(newCategory, newListProduct);
-                return result.BuildResult(request);
+                result.BuildResult(request);
             }
             catch (Exception ex)
             {
-                return result.BuildError(ex.Message + " " + ex.StackTrace);
+                result.BuildError(ex.Message + " " + ex.StackTrace);
             }
+            return result;
         }
 
-        public AppResponse<CategoryDTO> Delete(Guid id)
+        public AppResponse<string> Delete(Guid id)
         {
-            throw new NotImplementedException();
+            var result = new AppResponse<string>();
+            try
+            {
+                var category = _categoryRepository.Get(id);
+                if (category == null)
+                    result.BuildError("Category not found");
+                category!.IsDeleted = true;
+                _categoryRepository.Edit(category);
+                result.BuildResult("OK");
+            }
+            catch (Exception ex)
+            {
+                result.BuildError(ex.Message + " " + ex.StackTrace);
+            }
+            return result;
         }
 
         public AppResponse<CategoryDTO> Update(CategoryDTO request)
