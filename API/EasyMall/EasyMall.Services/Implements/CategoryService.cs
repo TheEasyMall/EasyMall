@@ -25,18 +25,16 @@ namespace EasyMall.Services.Implements
         private readonly ICategoryRepository _categoryRepository;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IMapper _mapper;
-        private readonly ITenantRepository _tenantRepository;
         private readonly IProductRepository _productRepository;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public CategoryService(ICategoryRepository categoryRepository, IHttpContextAccessor contextAccessor,
-            IMapper mapper, ITenantRepository tenantRepository, IProductRepository productRepository,
+            IMapper mapper, IProductRepository productRepository,
             UserManager<ApplicationUser> userManager)
         {
             _categoryRepository = categoryRepository;
             _contextAccessor = contextAccessor;
             _mapper = mapper;
-            _tenantRepository = tenantRepository;
             _productRepository = productRepository;
             _userManager = userManager;
         }
@@ -202,7 +200,7 @@ namespace EasyMall.Services.Implements
                     result.BuildError("Category not found");
                 category!.IsDeleted = true;
                 _categoryRepository.Edit(category);
-                result.BuildResult("OK");
+                result.BuildResult("Delete category successfully");
             }
             catch (Exception ex)
             {
