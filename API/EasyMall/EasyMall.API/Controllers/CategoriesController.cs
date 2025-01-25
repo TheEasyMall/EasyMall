@@ -1,5 +1,6 @@
 ﻿using EasyMall.Models.DTOs;
 using EasyMall.Services.Interfaces;
+using MayNghien.Infrastructure.Request.Base;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -51,6 +52,14 @@ namespace EasyMall.API.Controllers
         public IActionResult Delete(Guid id)
         {
             var result = _categoryService.Delete(id);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("search")]
+        public IActionResult Search(SearchRequest request)
+        {
+            var result = _categoryService.Search(request);
             return Ok(result);
         }
     }

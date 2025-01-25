@@ -3,6 +3,8 @@ using EasyMall.DALs.Entities;
 using EasyMall.DALs.Repositories.Interfaces;
 using EasyMall.Models.DTOs;
 using EasyMall.Services.Interfaces;
+using LinqKit;
+using MayNghien.Infrastructure.Request.Base;
 using MayNghien.Models.Response.Base;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -14,6 +16,7 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Maynghien.Infrastructure.Helpers.SearchHelper;
 
 namespace EasyMall.Services.Implements
 {
@@ -26,8 +29,8 @@ namespace EasyMall.Services.Implements
         private readonly IProductRepository _productRepository;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public CategoryService(ICategoryRepository categoryRepository, IHttpContextAccessor contextAccessor, 
-            IMapper mapper, ITenantRepository tenantRepository, IProductRepository productRepository, 
+        public CategoryService(ICategoryRepository categoryRepository, IHttpContextAccessor contextAccessor,
+            IMapper mapper, ITenantRepository tenantRepository, IProductRepository productRepository,
             UserManager<ApplicationUser> userManager)
         {
             _categoryRepository = categoryRepository;
@@ -114,25 +117,6 @@ namespace EasyMall.Services.Implements
             return result;
         }
 
-        public AppResponse<string> Delete(Guid id)
-        {
-            var result = new AppResponse<string>();
-            try
-            {
-                var category = _categoryRepository.Get(id);
-                if (category == null)
-                    result.BuildError("Category not found");
-                category!.IsDeleted = true;
-                _categoryRepository.Edit(category);
-                result.BuildResult("OK");
-            }
-            catch (Exception ex)
-            {
-                result.BuildError(ex.Message + " " + ex.StackTrace);
-            }
-            return result;
-        }
-
         public AppResponse<CategoryDTO> Update(CategoryDTO request)
         {
             var result = new AppResponse<CategoryDTO>();
@@ -202,10 +186,96 @@ namespace EasyMall.Services.Implements
         {
             if (productDTO == null || product == null)
                 return false;
-            return productDTO.Name == product.Name && 
-                productDTO.Description == product.Description && 
-                productDTO.Price == product.Price && 
+            return productDTO.Name == product.Name &&
+                productDTO.Description == product.Description &&
+                productDTO.Price == product.Price &&
                 productDTO.Quantity == product.Quantity;
+        }
+
+        public AppResponse<string> Delete(Guid id)
+        {
+            var result = new AppResponse<string>();
+            try
+            {
+                var category = _categoryRepository.Get(id);
+                if (category == null)
+                    result.BuildError("Category not found");
+                category!.IsDeleted = true;
+                _categoryRepository.Edit(category);
+                result.BuildResult("OK");
+            }
+            catch (Exception ex)
+            {
+                result.BuildError(ex.Message + " " + ex.StackTrace);
+            }
+            return result;
+        }
+
+        public AppResponse<SearchResponse<CategoryDTO>> Search(SearchRequest request)
+        {
+            var result = new AppResponse<SearchResponse<CategoryDTO>>();
+            try
+            {
+                var query = BuildFilterExpression(request.Filters!);
+                var numOfRecords = _categoryRepository.CountRecordsByPredicate(query);
+                var categories = _categoryRepository.FindByPredicate(query).Include(x => x.Products).AsQueryable();
+                if (request.SortBy != null)
+                    categories = _categoryRepository.addSort(categories, request.SortBy);
+                else
+                    categories = categories.OrderBy(x => x.Name);
+
+                int pageIndex = request.PageIndex ?? 1;
+                int pageSize = request.PageSize ?? 1;
+                int startIndex = (pageIndex - 1) * pageSize;
+                var categoryList = categories.Skip(startIndex).Take(pageSize).ToList();
+                var dtoList = _mapper.Map<List<CategoryDTO>>(categoryList);
+                var searchResponse = new SearchResponse<CategoryDTO>
+                {
+                    TotalRows = numOfRecords,
+                    TotalPages = CalculateNumOfPages(numOfRecords, pageSize),
+                    CurrentPage = pageIndex,
+                    Data = dtoList,
+                };
+                result.Data = searchResponse;
+                result.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                result.BuildError(ex.Message + " " + ex.StackTrace);
+            }
+            return result;
+        }
+
+        private ExpressionStarter<Category> BuildFilterExpression(List<Filter> filters)
+        {
+            try
+            {
+                var predicate = PredicateBuilder.New<Category>(true);
+                if (filters != null)
+                {
+                    foreach (var filter in filters)
+                    {
+                        switch (filter.FieldName)
+                        {
+                            case "Name":
+                                predicate = predicate.And(x => x.Name.Contains(filter.Value));
+                                break;
+                            case "IsPresent":
+                                predicate = predicate.And(x => x.IsPresent == bool.Parse(filter.Value));
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+
+                predicate = predicate.And(x => x.IsDeleted == false);
+                return predicate;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + " " + ex.StackTrace);
+            }
         }
     }
 }

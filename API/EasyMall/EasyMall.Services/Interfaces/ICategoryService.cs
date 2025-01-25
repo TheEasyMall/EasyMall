@@ -1,4 +1,5 @@
 ﻿using EasyMall.Models.DTOs;
+using MayNghien.Infrastructure.Request.Base;
 using MayNghien.Models.Response.Base;
 using System;
 using System.Collections.Generic;
@@ -15,5 +16,6 @@ namespace EasyMall.Services.Interfaces
         Task<AppResponse<CategoryDTO>> Create(CategoryDTO request);
         AppResponse<CategoryDTO> Update(CategoryDTO request);
         AppResponse<string> Delete(Guid id);
+        AppResponse<SearchResponse<CategoryDTO>> Search(SearchRequest request);
     }
 }
