@@ -11,6 +11,8 @@ namespace EasyMall.DALs.Entities
     public class Cart : BaseEntity
     {
         public int Quantity { get; set; }
+        public string Type { get; set; }
+        public double TotalAmount { get; set; }
 
         [ForeignKey("Tenant")]
         public Guid? TenantId { get; set; }
@@ -19,5 +21,9 @@ namespace EasyMall.DALs.Entities
         [ForeignKey("Product")]
         public Guid? ProductId { get; set; }
         public Product? Product { get; set; }
+
+        [ForeignKey("Order")]
+        public Guid? OrderId { get; set; }
+        public Order? Order { get; set; }
     }
 }
