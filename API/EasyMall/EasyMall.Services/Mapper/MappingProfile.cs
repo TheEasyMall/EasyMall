@@ -14,7 +14,6 @@ namespace EasyMall.Services.Mapper
         public MappingProfile()
         {
             TenantMap();
-            UserMap();
             CategoryMap();
             ProductMap();
             CartMap();
@@ -26,11 +25,6 @@ namespace EasyMall.Services.Mapper
         public void TenantMap()
         {
             CreateMap<Tenant, TenantDTO>().ReverseMap();
-        }
-
-        public void UserMap()
-        {
-            CreateMap<User, UserDTO>().ReverseMap();
         }
 
         public void CategoryMap()

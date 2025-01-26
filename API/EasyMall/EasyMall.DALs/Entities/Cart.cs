@@ -12,9 +12,9 @@ namespace EasyMall.DALs.Entities
     {
         public int Quantity { get; set; }
 
-        [ForeignKey("User")]
-        public Guid? UserId { get; set; }
-        public User? User { get; set; }
+        [ForeignKey("Tenant")]
+        public Guid? TenantId { get; set; }
+        public Tenant? Tenant { get; set; }
 
         [ForeignKey("Product")]
         public Guid? ProductId { get; set; }

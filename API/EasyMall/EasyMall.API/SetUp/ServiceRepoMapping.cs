@@ -11,7 +11,6 @@ namespace EasyMall.API.SetUp
         {
             //Repositories
             builder.Services.AddScoped<ITenantRepository, TenantRepository>();
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<ICartRepository, CartRepository>();
@@ -22,7 +21,6 @@ namespace EasyMall.API.SetUp
             //Services
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
             builder.Services.AddScoped<ITenantService, TenantService>();
-            builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<ICartService, CartService>();

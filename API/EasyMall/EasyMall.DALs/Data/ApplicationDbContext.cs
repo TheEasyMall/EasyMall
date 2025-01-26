@@ -21,7 +21,6 @@ namespace EasyMall.DALs.Data
         }
 
         public DbSet<Tenant> Tenants { get; set; }
-        public DbSet<User> Users { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Cart> Carts { get; set; }
@@ -34,7 +33,7 @@ namespace EasyMall.DALs.Data
             if (!optionsBuilder.IsConfigured)
             {
                 var appSetting = JsonConvert.DeserializeObject<AppSetting>(File.ReadAllText("appsettings.json"));
-                optionsBuilder.UseMySql(appSetting.ConnectionString, 
+                optionsBuilder.UseMySql(appSetting!.ConnectionString, 
                     new MySqlServerVersion(new Version(8, 0, 40)));
             }
         }

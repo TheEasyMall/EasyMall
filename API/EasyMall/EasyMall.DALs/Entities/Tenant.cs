@@ -16,7 +16,6 @@ namespace EasyMall.DALs.Entities
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
 
-        public ICollection<User>? Users { get; set; }
         public ICollection<Category>? Categories { get; set; }
     }
 }
