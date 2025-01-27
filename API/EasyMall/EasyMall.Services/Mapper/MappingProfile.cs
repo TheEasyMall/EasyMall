@@ -16,6 +16,7 @@ namespace EasyMall.Services.Mapper
             TenantMap();
             CategoryMap();
             ProductMap();
+            ProductPriceMap();
             CartMap();
             OrderMap();
             OrderDetailMap();
@@ -35,6 +36,11 @@ namespace EasyMall.Services.Mapper
         public void ProductMap()
         {
             CreateMap<Product, ProductDTO>().ReverseMap();
+        }
+
+        public void ProductPriceMap()
+        {
+            CreateMap<ProductPrice, ProductPriceDTO>().ReverseMap();
         }
 
         public void CartMap() 

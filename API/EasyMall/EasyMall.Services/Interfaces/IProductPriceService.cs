@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 
 namespace EasyMall.Services.Interfaces
 {
-    public interface ICartService
+    public interface IProductPriceService
     {
-        Task<AppResponse<CartDTO>> AddToCart(CartDTO request);
-        AppResponse<string> RemoveFromCart(Guid tenantId, Guid productId);
+        Task<AppResponse<ProductPriceDTO>> Create(ProductPriceDTO request);
+        AppResponse<ProductPriceDTO> Update(ProductPriceDTO request);
+        AppResponse<string> Delete(Guid id);
     }
 }
