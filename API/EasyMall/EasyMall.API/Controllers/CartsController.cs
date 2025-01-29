@@ -26,10 +26,17 @@ namespace EasyMall.API.Controllers
             return Ok(result);
         }
 
-        [HttpDelete]
+        [HttpDelete("remove")]
         public IActionResult RemoveFromCart(Guid productId)
         {
             var result = _cartService.RemoveFromCart(productId);
+            return Ok(result);
+        }
+
+        [HttpDelete("delete")]
+        public IActionResult DeleteFromCart(Guid productId)
+        {
+            var result = _cartService.DeleteFromCart(productId);
             return Ok(result);
         }
 

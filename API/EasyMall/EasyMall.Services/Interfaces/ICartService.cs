@@ -13,6 +13,7 @@ namespace EasyMall.Services.Interfaces
     {
         Task<AppResponse<CartDTO>> AddToCart(CartDTO request);
         AppResponse<string> RemoveFromCart(Guid productId);
+        AppResponse<string> DeleteFromCart(Guid productId);
         AppResponse<SearchResponse<CartDTO>> Search(SearchRequest request);
     }
 }

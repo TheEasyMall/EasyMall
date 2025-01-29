@@ -139,10 +139,31 @@ namespace EasyMall.Services.Implements
                 }
                 else
                 {
+                    cart.Quantity = 0;
                     cart.IsDeleted = true;
                     _cartRepository.Edit(cart);
                     result.BuildResult("Product removed from cart successfully.");
                 }
+            }
+            catch (Exception ex)
+            {
+                result.BuildError(ex.Message);
+            }
+            return result;
+        }
+
+        public AppResponse<string> DeleteFromCart(Guid productId)
+        {
+            var result = new AppResponse<string>();
+            try
+            {
+                var user = _httpContextAccessor.HttpContext?.User.Identity?.Name!;
+                var cart = _cartRepository.FindBy(c => c.ProductId == productId && c.IsDeleted == false).FirstOrDefault();
+                if (cart == null)
+                    throw new Exception("Product not found in the cart.");
+                cart.IsDeleted = true;
+                _cartRepository.Edit(cart);
+                result.BuildResult("Product removed from cart successfully.");
             }
             catch (Exception ex)
             {
