@@ -16,7 +16,6 @@ namespace EasyMall.API.SetUp
             builder.Services.AddScoped<IProductPriceRepository, ProductPriceRepository>();
             builder.Services.AddScoped<ICartRepository, CartRepository>();
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-            builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 
             //Services
@@ -27,7 +26,6 @@ namespace EasyMall.API.SetUp
             builder.Services.AddScoped<IProductPriceService, ProductPriceService>();
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
-            builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
             builder.Services.AddScoped<IReviewService, ReviewService>();
         }
     }

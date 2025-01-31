@@ -50,12 +50,12 @@ namespace EasyMall.Services.Implements
                 if (user == null)
                     throw new Exception("User not found.");
 
-                var product = _productRepository.FindBy(p => p.Id == request.ProductId).FirstOrDefault();
+                var product = _productRepository.FindByAsync(p => p.Id == request.ProductId).FirstOrDefault();
                 if (product == null)
                     throw new Exception("Product not found.");
 
                 var existingCart = _cartRepository
-                    .FindBy(c => c.ProductId == request.ProductId && c.Type == request.Type && c.TenantId == user.TenantId && c.IsDeleted == false)
+                    .FindByAsync(c => c.ProductId == request.ProductId && c.Type == request.Type && c.TenantId == user.TenantId && c.IsDeleted == false)
                     .FirstOrDefault();
 
                 if (existingCart != null)
@@ -73,7 +73,6 @@ namespace EasyMall.Services.Implements
                         TotalAmount = existingCart.TotalAmount,
                         TenantId = user.TenantId,
                         ProductPriceId = request.ProductPriceId,
-                        OrderId = existingCart.OrderId,
                         CreatedBy = user.Email,
                         Modifiedby = user.Email,
                         ModifiedOn = DateTime.UtcNow
@@ -93,7 +92,6 @@ namespace EasyMall.Services.Implements
                         TotalAmount = CalculateTotalAmount(request.ProductId!.Value, request.ProductPriceId!.Value, request.Type, request.Quantity),
                         TenantId = user.TenantId,
                         ProductPriceId = request.ProductPriceId,
-                        OrderId = request.OrderId,
                         CreatedBy = user?.Email,
                         CreatedOn = DateTime.UtcNow
                     };
@@ -110,11 +108,11 @@ namespace EasyMall.Services.Implements
 
         private double CalculateTotalAmount(Guid productId, Guid productPriceId, string type, int quantity)
         {
-            var product = _productRepository.FindBy(p => p.Id == productId).FirstOrDefault();
+            var product = _productRepository.FindByAsync(p => p.Id == productId).FirstOrDefault();
             if (product == null)
                 throw new Exception("Product not found.");
 
-            var productPrice = _productPriceRepository.FindBy(p => p.Id == productPriceId && p.Type == type).FirstOrDefault();
+            var productPrice = _productPriceRepository.FindByAsync(p => p.Id == productPriceId && p.Type == type).FirstOrDefault();
             if (productPrice == null)
                 throw new Exception("Product price not found for the given type.");
 
@@ -127,7 +125,7 @@ namespace EasyMall.Services.Implements
             try
             {
                 var user = _httpContextAccessor.HttpContext?.User.Identity?.Name!;
-                var cart = _cartRepository.FindBy(c => c.ProductId == productId && c.IsDeleted == false).FirstOrDefault();
+                var cart = _cartRepository.FindByAsync(c => c.ProductId == productId && c.IsDeleted == false).FirstOrDefault();
                 if (cart == null)
                     throw new Exception("Product not found in the cart.");
                 if (cart.Quantity > 1)
@@ -158,7 +156,7 @@ namespace EasyMall.Services.Implements
             try
             {
                 var user = _httpContextAccessor.HttpContext?.User.Identity?.Name!;
-                var cart = _cartRepository.FindBy(c => c.ProductId == productId && c.IsDeleted == false).FirstOrDefault();
+                var cart = _cartRepository.FindByAsync(c => c.ProductId == productId && c.IsDeleted == false).FirstOrDefault();
                 if (cart == null)
                     throw new Exception("Product not found in the cart.");
                 cart.IsDeleted = true;

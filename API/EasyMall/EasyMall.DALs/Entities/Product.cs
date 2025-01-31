@@ -24,7 +24,6 @@ namespace EasyMall.DALs.Entities
         public Guid? CategoryId { get; set; }
         public Category? Category { get; set; }
 
-        public ICollection<OrderDetail>? OrderDetails { get; set; }
         public ICollection<Cart>? Carts { get; set; }
         public ICollection<Review>? Reviews { get; set; }
         public ICollection<ProductPrice>? ProductPrices { get; set; }

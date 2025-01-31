@@ -44,7 +44,7 @@ namespace EasyMall.Services.Implements
             var result = new AppResponse<List<CategoryDTO>>();
             try
             {
-                var categories = _categoryRepository.FindBy(x => x.IsPresent == true).Include(x => x.Products).ToList();
+                var categories = _categoryRepository.FindByAsync(x => x.IsPresent == true).Include(x => x.Products).ToList();
                 var dtos = _mapper.Map<List<CategoryDTO>>(categories);
                 if (categories == null || !categories.Any())
                     result.BuildError("Category not found");
@@ -63,7 +63,7 @@ namespace EasyMall.Services.Implements
             var result = new AppResponse<CategoryDTO>();
             try
             {
-                var category = _categoryRepository.FindBy(x => x.Id == id).Include(x => x.Products).First();
+                var category = _categoryRepository.FindByAsync(x => x.Id == id).Include(x => x.Products).First();
                 var dto = _mapper.Map<CategoryDTO>(category);
                 if (category == null || category.IsDeleted == true)
                     result.BuildError("Category not found");
@@ -121,11 +121,11 @@ namespace EasyMall.Services.Implements
             try
             {
                 var user = _contextAccessor.HttpContext?.User.Identity?.Name!;
-                var category = _categoryRepository.FindBy(x => x.Id == request.Id).Include(x => x.Products).First();
+                var category = _categoryRepository.FindByAsync(x => x.Id == request.Id).Include(x => x.Products).First();
                 if (category == null)
                     return result.BuildError("Category not found");
 
-                var product = _productRepository.FindBy(x => x.CategoryId == category.Id).ToList();
+                var product = _productRepository.FindByAsync(x => x.CategoryId == category.Id).ToList();
                 product.ForEach(x =>
                 {
                     var dto = request.Products?.FirstOrDefault(dto => dto.Id == x.Id);

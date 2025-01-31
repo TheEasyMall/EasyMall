@@ -10,6 +10,5 @@ namespace EasyMall.Commons.Enums
     {
         Personal = 0,
         Enterprise = 1,
-        Admin = 2,
     }
 }

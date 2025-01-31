@@ -43,10 +43,10 @@ namespace EasyMall.Services.Implements
             var result = new AppResponse<LogInRequest>();
             try
             {
-                var user = await FindUserByEmailAsync(_contextAccessor.HttpContext?.User.Identity?.Name!);
+                var user = await _userManager.FindByEmailAsync(_contextAccessor.HttpContext?.User.Identity?.Name!);
                 var userDto = new LogInRequest();
-                userDto.Email = user.Email!;
-                Log.Information(user.Email + " login");
+                userDto.Email = user?.Email!;
+                Log.Information(user?.Email + " login");
                 result.BuildResult(userDto);
             }
             catch (Exception ex)
@@ -61,7 +61,7 @@ namespace EasyMall.Services.Implements
             var result = new AppResponse<LogInResponse>();
             try
             {
-                var identityUser = await FindUserByEmailAsync(request.Email);
+                var identityUser = await _userManager.FindByNameAsync(request.Email);
                 if (identityUser == null)
                 {
                     if (request.Email == "admin@gmail.com")
@@ -134,11 +134,6 @@ namespace EasyMall.Services.Implements
             }
         }
 
-        private async Task<ApplicationUser> FindUserByEmailAsync(string email)
-        {
-            return await _userManager.FindByEmailAsync(email) ?? throw new Exception("Email not found.");
-        }
-
         private async Task<ApplicationUser> CreateAdminUserAsync(string email)
         {
             var newIdentity = new ApplicationUser
@@ -175,7 +170,10 @@ namespace EasyMall.Services.Implements
 
         private async Task<bool> CheckUserExists(string email, string phoneNumber)
         {
-            var userByEmail = await FindUserByEmailAsync(email);
+            if (string.IsNullOrEmpty(email))
+                throw new ArgumentNullException(nameof(email));
+
+            var userByEmail = await _userManager.FindByEmailAsync(email);
             if (userByEmail != null) return true;
 
             var userByPhone = _userManager.Users.FirstOrDefault(p => p.PhoneNumber == phoneNumber);

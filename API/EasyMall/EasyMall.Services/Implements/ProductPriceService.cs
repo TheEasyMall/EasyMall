@@ -59,7 +59,7 @@ namespace EasyMall.Services.Implements
             var result = new AppResponse<string>();
             try
             {
-                var productPrice = _productPriceRepository.FindBy(p => p.Id == id).First();
+                var productPrice = _productPriceRepository.FindByAsync(p => p.Id == id).First();
                 if (productPrice == null)
                     result.BuildError("Product not found");
                 productPrice!.IsDeleted = true;
@@ -79,7 +79,7 @@ namespace EasyMall.Services.Implements
             try
             {
                 var user = _httpContextAccessor.HttpContext?.User.Identity?.Name!;
-                var productPrice = _productPriceRepository.FindBy(p => p.Id == request.Id).First();
+                var productPrice = _productPriceRepository.FindByAsync(p => p.Id == request.Id).First();
                 if (productPrice == null)
                     result.BuildError("Product price not found");
                 productPrice!.Price = request.Price;

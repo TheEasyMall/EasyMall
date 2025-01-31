@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace EasyMall.Commons.Enums
 {
-    public enum Roles
+    public enum Status
     {
-        User = 0,
-        TenantAdmin = 1,
-        SuperAdmin = 2,
+        Cancelled = -1,
+        Pending = 0,
+        Processing = 1,
+        Shipping = 2,
+        Completed = 3
     }
 }

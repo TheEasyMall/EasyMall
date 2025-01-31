@@ -39,7 +39,7 @@ namespace EasyMall.Services.Implements
             var result = new AppResponse<ProductDTO>();
             try
             {
-                var product = _productRepository.FindBy(p => p.Id == id).First();
+                var product = _productRepository.FindByAsync(p => p.Id == id).First();
                 if (product == null)
                     result.BuildError("Product not found");
                 var dto = _mapper.Map<ProductDTO>(product);
@@ -84,7 +84,7 @@ namespace EasyMall.Services.Implements
             try
             {
                 var user = _httpContextAccessor.HttpContext?.User.Identity?.Name!;
-                var product = _productRepository.FindBy(p => p.Id == request.Id).First();
+                var product = _productRepository.FindByAsync(p => p.Id == request.Id).First();
                 if (product == null)
                     result.BuildError("Product not found");
 
@@ -111,7 +111,7 @@ namespace EasyMall.Services.Implements
             var result = new AppResponse<string>();
             try
             {
-                var product = _productRepository.FindBy(p => p.Id == id).First();
+                var product = _productRepository.FindByAsync(p => p.Id == id).First();
                 if (product == null)
                     result.BuildError("Product not found");
                 product!.IsDeleted = true;

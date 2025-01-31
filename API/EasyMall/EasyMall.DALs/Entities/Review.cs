@@ -12,7 +12,7 @@ namespace EasyMall.DALs.Entities
     public class Review : BaseEntity
     {
         public Ratings Rating { get; set; }
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
 
         [ForeignKey("Tenant")]
         public Guid? TenantId { get; set; }

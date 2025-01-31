@@ -14,6 +14,5 @@ namespace EasyMall.Models.DTOs
         public double TotalAmount { get; set; }
         public Guid? ProductId { get; set; }
         public Guid? ProductPriceId { get; set; }
-        public Guid? OrderId { get; set; }
     }
 }
