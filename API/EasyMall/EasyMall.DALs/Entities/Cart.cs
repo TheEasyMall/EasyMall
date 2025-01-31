@@ -25,7 +25,5 @@ namespace EasyMall.DALs.Entities
         [ForeignKey("ProductPrice")]
         public Guid? ProductPriceId { get; set; }
         public ProductPrice? ProductPrice { get; set; }
-
-        public ICollection<Order>? Orders { get; set; }
     }
 }
