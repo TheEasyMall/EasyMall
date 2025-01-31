@@ -4,6 +4,7 @@ using EasyMall.DALs.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyMall.DALs.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250131131526_AddDbSet")]
+    partial class AddDbSet
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -139,7 +142,54 @@ namespace EasyMall.DALs.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Carts", (string)null);
+                    b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("EasyMall.DALs.Entities.CartItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("CartId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Modifiedby")
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid?>("OrderId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("double");
+
+                    b.Property<Guid?>("ProductId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("CartItems");
                 });
 
             modelBuilder.Entity("EasyMall.DALs.Entities.Category", b =>
@@ -181,7 +231,7 @@ namespace EasyMall.DALs.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("EasyMall.DALs.Entities.Order", b =>
@@ -191,6 +241,9 @@ namespace EasyMall.DALs.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<Guid?>("CartId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("CartItemId")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("CreatedBy")
@@ -232,9 +285,11 @@ namespace EasyMall.DALs.Migrations
 
                     b.HasIndex("CartId");
 
+                    b.HasIndex("CartItemId");
+
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("EasyMall.DALs.Entities.Product", b =>
@@ -279,7 +334,7 @@ namespace EasyMall.DALs.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("EasyMall.DALs.Entities.ProductPrice", b =>
@@ -316,7 +371,7 @@ namespace EasyMall.DALs.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductPrices", (string)null);
+                    b.ToTable("ProductPrices");
                 });
 
             modelBuilder.Entity("EasyMall.DALs.Entities.Review", b =>
@@ -358,7 +413,7 @@ namespace EasyMall.DALs.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Reviews", (string)null);
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("EasyMall.DALs.Entities.Tenant", b =>
@@ -399,7 +454,7 @@ namespace EasyMall.DALs.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tenants", (string)null);
+                    b.ToTable("Tenants");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -568,6 +623,28 @@ namespace EasyMall.DALs.Migrations
                     b.Navigation("Tenant");
                 });
 
+            modelBuilder.Entity("EasyMall.DALs.Entities.CartItem", b =>
+                {
+                    b.HasOne("EasyMall.DALs.Entities.Cart", "Cart")
+                        .WithMany("CartItems")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("EasyMall.DALs.Entities.Order", null)
+                        .WithMany("CartItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("EasyMall.DALs.Entities.Product", "Product")
+                        .WithMany("CartItems")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("EasyMall.DALs.Entities.Category", b =>
                 {
                     b.HasOne("EasyMall.DALs.Entities.Tenant", "Tenant")
@@ -580,9 +657,14 @@ namespace EasyMall.DALs.Migrations
 
             modelBuilder.Entity("EasyMall.DALs.Entities.Order", b =>
                 {
-                    b.HasOne("EasyMall.DALs.Entities.Cart", "Cart")
+                    b.HasOne("EasyMall.DALs.Entities.Cart", null)
                         .WithMany("Orders")
                         .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("EasyMall.DALs.Entities.CartItem", "CartItem")
+                        .WithMany()
+                        .HasForeignKey("CartItemId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("EasyMall.DALs.Entities.Tenant", "Tenant")
@@ -590,7 +672,7 @@ namespace EasyMall.DALs.Migrations
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("Cart");
+                    b.Navigation("CartItem");
 
                     b.Navigation("Tenant");
                 });
@@ -685,6 +767,8 @@ namespace EasyMall.DALs.Migrations
 
             modelBuilder.Entity("EasyMall.DALs.Entities.Cart", b =>
                 {
+                    b.Navigation("CartItems");
+
                     b.Navigation("Orders");
                 });
 
@@ -693,8 +777,15 @@ namespace EasyMall.DALs.Migrations
                     b.Navigation("Products");
                 });
 
+            modelBuilder.Entity("EasyMall.DALs.Entities.Order", b =>
+                {
+                    b.Navigation("CartItems");
+                });
+
             modelBuilder.Entity("EasyMall.DALs.Entities.Product", b =>
                 {
+                    b.Navigation("CartItems");
+
                     b.Navigation("Carts");
 
                     b.Navigation("ProductPrices");

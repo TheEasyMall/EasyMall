@@ -143,8 +143,6 @@ namespace EasyMall.Services.Implements
                             x.Quantity = dto.Quantity;
                             x.CreatedBy = user;
                             x.CreatedOn = DateTime.UtcNow;
-                            x.Modifiedby = user;
-                            x.ModifiedOn = DateTime.UtcNow;
                         }
                     }
                 });

@@ -20,9 +20,5 @@ namespace EasyMall.DALs.Entities
         [ForeignKey("Tenant")]
         public Guid? TenantId { get; set; }
         public Tenant? Tenant { get; set; }
-
-        [ForeignKey("Cart")]
-        public Guid? CartId { get; set; }
-        public Cart? Cart { get; set; }
     }
 }
