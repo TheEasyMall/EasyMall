@@ -1,17 +1,11 @@
 ﻿using AutoMapper;
 using EasyMall.DALs.Entities;
-using EasyMall.DALs.Repositories.Implements;
 using EasyMall.DALs.Repositories.Interfaces;
 using EasyMall.Models.DTOs;
 using EasyMall.Services.Interfaces;
 using MayNghien.Models.Response.Base;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EasyMall.Services.Implements
 {
@@ -45,7 +39,7 @@ namespace EasyMall.Services.Implements
                 newPrice.CreatedOn = DateTime.UtcNow;
 
                 _productPriceRepository.Add(newPrice);
-                result.BuildResult(request);
+                result.BuildResult(request, "The prices of the product categories have been successfully created");
             }
             catch (Exception ex)
             {

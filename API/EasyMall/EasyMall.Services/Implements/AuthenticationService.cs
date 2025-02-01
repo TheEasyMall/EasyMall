@@ -1,5 +1,4 @@
-﻿using EasyMall.Commons.Enums;
-using EasyMall.DALs.Entities;
+﻿using EasyMall.DALs.Entities;
 using EasyMall.DALs.Repositories.Interfaces;
 using EasyMall.Models.DTOs.Auth.Requests;
 using EasyMall.Models.DTOs.Auth.Responses;
@@ -10,13 +9,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using static MayNghien.Infrastructure.CommonMessage.AuthResponseMessage;
 
 namespace EasyMall.Services.Implements

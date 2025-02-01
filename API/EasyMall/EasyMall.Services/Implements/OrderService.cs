@@ -7,11 +7,6 @@ using EasyMall.Services.Interfaces;
 using MayNghien.Models.Response.Base;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EasyMall.Services.Implements
 {
@@ -19,18 +14,16 @@ namespace EasyMall.Services.Implements
     {
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ITenantRepository _tenantRepository;
         private readonly ICartRepository _cartRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IOrderRepository _orderRepository;
 
         public OrderService(IMapper mapper, UserManager<ApplicationUser> userManager,
-            ITenantRepository tenantRepository, ICartRepository cartRepository,
-            IHttpContextAccessor httpContextAccessor, IOrderRepository orderRepository)
+            ICartRepository cartRepository,IHttpContextAccessor httpContextAccessor, 
+            IOrderRepository orderRepository)
         {
             _mapper = mapper;
             _userManager = userManager;
-            _tenantRepository = tenantRepository;
             _cartRepository = cartRepository;
             _httpContextAccessor = httpContextAccessor;
             _orderRepository = orderRepository;
@@ -46,19 +39,29 @@ namespace EasyMall.Services.Implements
                 if (carts == null || !carts.Any())
                     return result.BuildError("Carts not found");
 
-                var totalAmount = carts.Sum(c => c.TotalAmount);
                 var newOrder = _mapper.Map<Order>(request);
                 newOrder.Id = Guid.NewGuid();
                 newOrder.TenantId = user?.TenantId;
                 newOrder.Status = Status.Pending;
                 newOrder.CreatedOn = DateTime.UtcNow;
                 newOrder.CreatedBy = user?.Email;
+                newOrder.ShippingMethod = ShippingMethod.Truck;
+
+                var totalAmount = carts.Sum(c => c.TotalAmount);
                 newOrder.TotalAmount = totalAmount;
                 newOrder.ShippingFee = request.ShippingFee;
-                newOrder.ShippingMethod = request.ShippingMethod;
                 newOrder.ShippingAddress = request.ShippingAddress;
-                _orderRepository.Add(newOrder);
 
+                if (newOrder.ShippingMethod == ShippingMethod.Truck ||
+                    newOrder.ShippingMethod == ShippingMethod.Ship)
+                    newOrder.TotalAmount += 10000;
+                else if (newOrder.ShippingMethod == ShippingMethod.Plane)
+                    newOrder.TotalAmount += 20000;
+                else if (newOrder.ShippingMethod == ShippingMethod.Mototbike)
+                    newOrder.TotalAmount += 5000;
+
+                _orderRepository.Add(newOrder);
+                _cartRepository.DeleteRange(carts);
                 result.BuildResult(request, "Order created successfully");
             }
             catch (Exception ex)

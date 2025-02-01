@@ -9,13 +9,6 @@ using MayNghien.Models.Response.Base;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Maynghien.Infrastructure.Helpers.SearchHelper;
 
 namespace EasyMall.Services.Implements
@@ -106,7 +99,7 @@ namespace EasyMall.Services.Implements
                 }
 
                 _categoryRepository.AddProductToCategory(newCategory, newListProduct);
-                result.BuildResult(request);
+                result.BuildResult(request, "Product created successfully");
             }
             catch (Exception ex)
             {

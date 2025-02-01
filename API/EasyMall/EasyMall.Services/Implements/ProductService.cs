@@ -9,11 +9,6 @@ using MayNghien.Infrastructure.Request.Base;
 using MayNghien.Models.Response.Base;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Maynghien.Infrastructure.Helpers.SearchHelper;
 
 namespace EasyMall.Services.Implements
@@ -69,7 +64,7 @@ namespace EasyMall.Services.Implements
                 newProduct.CreatedOn = DateTime.UtcNow;
 
                 _productRepository.Add(newProduct);
-                result.BuildResult(request);
+                result.BuildResult(request, "Product created successfully");
             }
             catch (Exception ex)
             {

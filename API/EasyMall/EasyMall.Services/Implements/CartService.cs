@@ -8,12 +8,6 @@ using MayNghien.Infrastructure.Request.Base;
 using MayNghien.Models.Response.Base;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Maynghien.Infrastructure.Helpers.SearchHelper;
 
 namespace EasyMall.Services.Implements
@@ -23,18 +17,16 @@ namespace EasyMall.Services.Implements
         private readonly IProductRepository _productRepository;
         private readonly IProductPriceRepository _productPriceRepository;
         private readonly ICartRepository _cartRepository;
-        private readonly ITenantRepository _tenantRepository;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public CartService(IProductRepository productRepository, ICartRepository cartRepository,
-            ITenantRepository tenantRepository, IMapper mapper, IHttpContextAccessor httpContextAccessor,
-            UserManager<ApplicationUser> userManager, IProductPriceRepository productPriceRepository)
+            IMapper mapper, IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, 
+            IProductPriceRepository productPriceRepository)
         {
             _productRepository = productRepository;
             _cartRepository = cartRepository;
-            _tenantRepository = tenantRepository;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
@@ -78,7 +70,6 @@ namespace EasyMall.Services.Implements
                         ModifiedOn = DateTime.UtcNow
                     };
                     _cartRepository.Add(updatedCart);
-
                     result.BuildResult(_mapper.Map<CartDTO>(updatedCart));
                 }
                 else
@@ -96,7 +87,7 @@ namespace EasyMall.Services.Implements
                         CreatedOn = DateTime.UtcNow
                     };
                     _cartRepository.Add(newCart);
-                    result.BuildResult(_mapper.Map<CartDTO>(newCart));
+                    result.BuildResult(_mapper.Map<CartDTO>(newCart), "Added product to cart successfully");
                 }
             }
             catch (Exception ex)

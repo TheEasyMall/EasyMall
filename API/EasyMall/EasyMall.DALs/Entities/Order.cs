@@ -14,7 +14,7 @@ namespace EasyMall.DALs.Entities
         public double TotalAmount { get; set; }
         public Status Status { get; set; }
         public string ShippingAddress { get; set; }
-        public string ShippingMethod { get; set; }
+        public ShippingMethod ShippingMethod { get; set; }
         public double ShippingFee { get; set; }
 
         [ForeignKey("Tenant")]
