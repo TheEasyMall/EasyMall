@@ -35,7 +35,8 @@ namespace EasyMall.Services.Implements
             try
             {
                 var user = await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext?.User.Identity?.Name!);
-                var carts = _cartRepository.FindByAsync(c => request.CartIds!.Contains(c.Id) && c.TenantId == user!.TenantId).ToList();
+                var carts = _cartRepository.FindByAsync(c => request.CartIds!.Contains(c.Id)
+                                        && c.TenantId == user!.TenantId && c.IsDeleted == false).ToList();
                 if (carts == null || !carts.Any())
                     return result.BuildError("Carts not found");
 
@@ -51,7 +52,6 @@ namespace EasyMall.Services.Implements
                 newOrder.TotalAmount = totalAmount;
                 newOrder.ShippingFee = request.ShippingFee;
                 newOrder.ShippingAddress = request.ShippingAddress;
-
                 if (newOrder.ShippingMethod == ShippingMethod.Truck ||
                     newOrder.ShippingMethod == ShippingMethod.Ship)
                     newOrder.TotalAmount += 10000;
@@ -59,9 +59,12 @@ namespace EasyMall.Services.Implements
                     newOrder.TotalAmount += 20000;
                 else if (newOrder.ShippingMethod == ShippingMethod.Mototbike)
                     newOrder.TotalAmount += 5000;
-
+                foreach (var cart in carts)
+                {
+                    cart.IsDeleted = true;
+                    _cartRepository.Edit(cart);
+                }
                 _orderRepository.Add(newOrder);
-                _cartRepository.DeleteRange(carts);
                 result.BuildResult(request, "Order created successfully");
             }
             catch (Exception ex)
