@@ -17,5 +17,6 @@ namespace EasyMall.DALs.Entities
         public string PhoneNumber { get; set; }
 
         public ICollection<Category>? Categories { get; set; }
+        public ICollection<Product>? Products { get; set; }
     }
 }

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyMall.DALs.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250202055909_Initalize_Database")]
+    [Migration("20250202075518_Initalize_Database")]
     partial class Initalize_Database
     {
         /// <inheritdoc />
@@ -208,6 +208,9 @@ namespace EasyMall.DALs.Migrations
                     b.Property<string>("Modifiedby")
                         .HasColumnType("longtext");
 
+                    b.Property<int>("ProductAddress")
+                        .HasColumnType("int");
+
                     b.Property<string>("ShippingAddress")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -261,6 +264,10 @@ namespace EasyMall.DALs.Migrations
                     b.Property<Guid?>("ProductId")
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
@@ -281,6 +288,9 @@ namespace EasyMall.DALs.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
+
+                    b.Property<int>("Address")
+                        .HasColumnType("int");
 
                     b.Property<Guid?>("CategoryId")
                         .HasColumnType("char(36)");
@@ -314,9 +324,14 @@ namespace EasyMall.DALs.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("char(36)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Products");
                 });
@@ -384,6 +399,10 @@ namespace EasyMall.DALs.Migrations
 
                     b.Property<Guid?>("ProductId")
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
@@ -635,7 +654,7 @@ namespace EasyMall.DALs.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("EasyMall.DALs.Entities.Product", "Product")
-                        .WithMany()
+                        .WithMany("OrderDetails")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict);
 
@@ -651,7 +670,14 @@ namespace EasyMall.DALs.Migrations
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("EasyMall.DALs.Entities.Tenant", "Tenant")
+                        .WithMany("Products")
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Category");
+
+                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("EasyMall.DALs.Entities.ProductPrice", b =>
@@ -746,6 +772,8 @@ namespace EasyMall.DALs.Migrations
                 {
                     b.Navigation("Carts");
 
+                    b.Navigation("OrderDetails");
+
                     b.Navigation("ProductPrices");
 
                     b.Navigation("Reviews");
@@ -759,6 +787,8 @@ namespace EasyMall.DALs.Migrations
             modelBuilder.Entity("EasyMall.DALs.Entities.Tenant", b =>
                 {
                     b.Navigation("Categories");
+
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

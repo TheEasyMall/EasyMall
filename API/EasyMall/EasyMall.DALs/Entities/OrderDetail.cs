@@ -19,6 +19,7 @@ namespace EasyMall.DALs.Entities
 
         [ForeignKey("Product")]
         public Guid? ProductId { get; set; }
+        public string ProductName { get; set; }
         public Product? Product { get; set; }
     }
 }

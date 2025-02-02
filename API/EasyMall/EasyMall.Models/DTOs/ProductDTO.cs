@@ -1,4 +1,5 @@
-﻿using MayNghien.Infrastructure.Models;
+﻿using EasyMall.Commons.Enums;
+using MayNghien.Infrastructure.Models;
 
 namespace EasyMall.Models.DTOs
 {
@@ -8,6 +9,7 @@ namespace EasyMall.Models.DTOs
         public string Description { get; set; }
         public double Price { get; set; }
         public int Quantity { get; set; }
+        public Address Address { get; set; }
         public Guid? CategoryId { get; set; }
     }
 }

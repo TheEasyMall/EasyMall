@@ -59,6 +59,8 @@ namespace EasyMall.Services.Implements
                 newProduct.Description = request.Description;
                 newProduct.Price = request.Price;
                 newProduct.Quantity = request.Quantity;
+                newProduct.Address = request.Address;
+                newProduct.TenantId = user?.TenantId;
                 newProduct.CategoryId = request.CategoryId;
                 newProduct.CreatedBy = user?.Email;
                 newProduct.CreatedOn = DateTime.UtcNow;
@@ -87,6 +89,7 @@ namespace EasyMall.Services.Implements
                 product.Description = request.Description;
                 product.Price = request.Price;
                 product.Quantity = request.Quantity;
+                product.Address = request.Address;
                 product.CategoryId = request.CategoryId;
                 product.Modifiedby = user;
                 product.ModifiedOn = DateTime.UtcNow;

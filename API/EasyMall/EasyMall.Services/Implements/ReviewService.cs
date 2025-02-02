@@ -25,14 +25,17 @@ namespace EasyMall.Services.Implements
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IProductRepository _productRepository;
 
-        public ReviewService(IReviewRepository reviewRepository, IMapper mapper, 
-            IHttpContextAccessor contextAccessor, UserManager<ApplicationUser> userManager)
+        public ReviewService(IReviewRepository reviewRepository, IMapper mapper,
+            IHttpContextAccessor contextAccessor, UserManager<ApplicationUser> userManager, 
+            IProductRepository productRepository)
         {
             _reviewRepository = reviewRepository;
             _mapper = mapper;
             _contextAccessor = contextAccessor;
             _userManager = userManager;
+            _productRepository = productRepository;
         }
 
         public async Task<AppResponse<ReviewDTO>> Create(ReviewDTO request)
@@ -41,12 +44,17 @@ namespace EasyMall.Services.Implements
             try
             {
                 var user = await _userManager.FindByEmailAsync(_contextAccessor.HttpContext?.User.Identity?.Name!);
+                var product = _productRepository.FindByAsync(p => p.Id == request.ProductId).ToList();
+                if (product == null)
+                    result.BuildError("Product not found");
+
                 var newReview = new Review
                 {
                     Id = Guid.NewGuid(),
                     Rating = request.Rating,
                     Comment = request.Comment,
                     ProductId = request.ProductId,
+                    ProductName = product.ToList().First().Name,
                     TenantId = user?.TenantId,
                     CreatedOn = DateTime.UtcNow,
                     CreatedBy = user?.Email,

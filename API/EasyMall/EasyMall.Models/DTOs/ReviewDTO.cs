@@ -8,5 +8,6 @@ namespace EasyMall.Models.DTOs
         public Ratings Rating { get; set; }
         public string? Comment { get; set; }
         public Guid? ProductId { get; set; }
+        public string ProductName { get; set; }
     }
 }

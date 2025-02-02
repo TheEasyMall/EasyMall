@@ -11,6 +11,7 @@ namespace EasyMall.DALs.Entities
 {
     public class Review : BaseEntity
     {
+        public string ProductName { get; set; }
         public Ratings Rating { get; set; }
         public string? Comment { get; set; }
 

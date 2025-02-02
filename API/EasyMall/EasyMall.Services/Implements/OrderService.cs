@@ -7,6 +7,7 @@ using EasyMall.Services.Interfaces;
 using MayNghien.Models.Response.Base;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace EasyMall.Services.Implements
 {
@@ -17,16 +18,18 @@ namespace EasyMall.Services.Implements
         private readonly ICartRepository _cartRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IOrderRepository _orderRepository;
+        private readonly IProductRepository _productRepository;
 
         public OrderService(IMapper mapper, UserManager<ApplicationUser> userManager,
-            ICartRepository cartRepository,IHttpContextAccessor httpContextAccessor, 
-            IOrderRepository orderRepository)
+            ICartRepository cartRepository, IHttpContextAccessor httpContextAccessor,
+            IOrderRepository orderRepository, IProductRepository productRepository)
         {
             _mapper = mapper;
             _userManager = userManager;
             _cartRepository = cartRepository;
             _httpContextAccessor = httpContextAccessor;
             _orderRepository = orderRepository;
+            _productRepository = productRepository;
         }
 
         public async Task<AppResponse<OrderDTO>> Create(OrderDTO request)
@@ -36,17 +39,21 @@ namespace EasyMall.Services.Implements
             {
                 var user = await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext?.User.Identity?.Name!);
                 var carts = _cartRepository.FindByAsync(c => request.CartIds!.Contains(c.Id)
-                                        && c.TenantId == user!.TenantId && c.IsDeleted == false).ToList();
-                if (carts == null || !carts.Any())
-                    return result.BuildError("Carts not found");
-
+                                                && c.TenantId == user!.TenantId && c.IsDeleted == false)
+                                            .Include(c => c.Product).ToList();
                 var newOrder = _mapper.Map<Order>(request);
                 newOrder.Id = Guid.NewGuid();
+                newOrder.ProductAddress = request.ProductAddress;
                 newOrder.TenantId = user?.TenantId;
-                newOrder.Status = Status.Pending;
+                newOrder.Status = request.Status;
                 newOrder.CreatedOn = DateTime.UtcNow;
                 newOrder.CreatedBy = user?.Email;
-                newOrder.ShippingMethod = ShippingMethod.Truck;
+                if (newOrder.ProductAddress == Address.HaNoi || newOrder.ProductAddress == Address.HoChiMinh || newOrder.ProductAddress == Address.DaNang
+                    || newOrder.ProductAddress == Address.HaiPhong || newOrder.ProductAddress == Address.CanTho)
+                    newOrder.ShippingMethod = ShippingMethod.Truck;
+                else if (newOrder.ProductAddress == Address.NewYork || newOrder.ProductAddress == Address.LosAngeles || newOrder.ProductAddress == Address.London
+                    || newOrder.ProductAddress == Address.Paris || newOrder.ProductAddress == Address.Tokyo)
+                    newOrder.ShippingMethod = ShippingMethod.Plane;
 
                 var totalAmount = carts.Sum(c => c.TotalAmount);
                 newOrder.TotalAmount = totalAmount;
@@ -71,6 +78,7 @@ namespace EasyMall.Services.Implements
                         Id = Guid.NewGuid(),
                         OrderId = newOrder.Id,
                         ProductId = cart.ProductId,
+                        ProductName = cart.Product!.Name,
                         Quantity = cart.Quantity,
                         TotalAmount = cart.TotalAmount,
                         CreatedOn = DateTime.UtcNow,

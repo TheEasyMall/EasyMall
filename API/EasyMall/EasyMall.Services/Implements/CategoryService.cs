@@ -92,9 +92,11 @@ namespace EasyMall.Services.Implements
                     product.Description = product.Description;
                     product.Price = product.Price;
                     product.Quantity = product.Quantity;
+                    product.Address = product.Address;
                     product.CreatedOn = DateTime.UtcNow;
                     product.CreatedBy = user?.Email;
                     product.CategoryId = newCategory.Id;
+                    newCategory.TenantId = user?.TenantId;
                     newListProduct.Add(product);
                 }
 
@@ -134,6 +136,7 @@ namespace EasyMall.Services.Implements
                             x.Description = dto.Description;
                             x.Price = dto.Price;
                             x.Quantity = dto.Quantity;
+                            x.Address = dto.Address;
                             x.CreatedBy = user;
                             x.CreatedOn = DateTime.UtcNow;
                         }
@@ -150,6 +153,7 @@ namespace EasyMall.Services.Implements
                     newProduct.Description = x.Description;
                     newProduct.Price = x.Price;
                     newProduct.Quantity = x.Quantity;
+                    newProduct.Address = x.Address;
                     newProduct.CategoryId = category.Id;
                     newProduct.CreatedBy = user;
                     newProduct.CreatedOn = DateTime.UtcNow;
@@ -178,7 +182,8 @@ namespace EasyMall.Services.Implements
             return productDTO.Name == product.Name &&
                 productDTO.Description == product.Description &&
                 productDTO.Price == product.Price &&
-                productDTO.Quantity == product.Quantity;
+                productDTO.Quantity == product.Quantity &&
+                productDTO.Address == product.Address;
         }
 
         public AppResponse<string> Delete(Guid id)
