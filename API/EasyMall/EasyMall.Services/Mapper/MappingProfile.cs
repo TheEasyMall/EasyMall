@@ -19,6 +19,7 @@ namespace EasyMall.Services.Mapper
             ProductPriceMap();
             CartMap();
             OrderMap();
+            OrderDetailMap();
             ReviewMap();
         }
 
@@ -51,6 +52,11 @@ namespace EasyMall.Services.Mapper
         {
             CreateMap<Order, OrderDTO>().ReverseMap();
         }
+
+        public void OrderDetailMap()
+        {
+            CreateMap<OrderDetail, OrderDetailDTO>().ReverseMap();
+        }   
 
         public void ReviewMap()
         {

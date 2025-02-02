@@ -59,11 +59,27 @@ namespace EasyMall.Services.Implements
                     newOrder.TotalAmount += 20000;
                 else if (newOrder.ShippingMethod == ShippingMethod.Mototbike)
                     newOrder.TotalAmount += 5000;
+
+                var orderDetails = new List<OrderDetail>();
                 foreach (var cart in carts)
                 {
                     cart.IsDeleted = true;
                     _cartRepository.Edit(cart);
+
+                    var orderDetail = new OrderDetail
+                    {
+                        Id = Guid.NewGuid(),
+                        OrderId = newOrder.Id,
+                        ProductId = cart.ProductId,
+                        Quantity = cart.Quantity,
+                        TotalAmount = cart.TotalAmount,
+                        CreatedOn = DateTime.UtcNow,
+                        CreatedBy = user?.Email
+                    };
+                    orderDetails.Add(orderDetail);
                 }
+                newOrder.OrderDetails = orderDetails;
+
                 _orderRepository.Add(newOrder);
                 result.BuildResult(request, "Order created successfully");
             }

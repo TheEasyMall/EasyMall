@@ -20,5 +20,7 @@ namespace EasyMall.DALs.Entities
         [ForeignKey("Tenant")]
         public Guid? TenantId { get; set; }
         public Tenant? Tenant { get; set; }
+
+        public ICollection<OrderDetail>? OrderDetails { get; set; }
     }
 }

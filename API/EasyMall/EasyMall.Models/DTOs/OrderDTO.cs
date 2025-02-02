@@ -11,5 +11,6 @@ namespace EasyMall.Models.DTOs
         public ShippingMethod ShippingMethod { get; set; }
         public double ShippingFee { get; set; }
         public List<Guid>? CartIds { get; set; }
+        public List<OrderDetailDTO>? OrderDetails { get; set; }
     }
 }

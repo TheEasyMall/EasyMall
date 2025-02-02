@@ -231,6 +231,48 @@ namespace EasyMall.DALs.Migrations
                     b.ToTable("Orders");
                 });
 
+            modelBuilder.Entity("EasyMall.DALs.Entities.OrderDetail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Modifiedby")
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid?>("OrderId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("ProductId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<double>("TotalAmount")
+                        .HasColumnType("double");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderDetails");
+                });
+
             modelBuilder.Entity("EasyMall.DALs.Entities.Product", b =>
                 {
                     b.Property<Guid>("Id")
@@ -582,6 +624,23 @@ namespace EasyMall.DALs.Migrations
                     b.Navigation("Tenant");
                 });
 
+            modelBuilder.Entity("EasyMall.DALs.Entities.OrderDetail", b =>
+                {
+                    b.HasOne("EasyMall.DALs.Entities.Order", "Order")
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("EasyMall.DALs.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("EasyMall.DALs.Entities.Product", b =>
                 {
                     b.HasOne("EasyMall.DALs.Entities.Category", "Category")
@@ -673,6 +732,11 @@ namespace EasyMall.DALs.Migrations
             modelBuilder.Entity("EasyMall.DALs.Entities.Category", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("EasyMall.DALs.Entities.Order", b =>
+                {
+                    b.Navigation("OrderDetails");
                 });
 
             modelBuilder.Entity("EasyMall.DALs.Entities.Product", b =>
