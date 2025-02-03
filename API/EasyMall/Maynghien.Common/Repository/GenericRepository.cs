@@ -175,7 +175,7 @@ namespace Maynghien.Infrastructure.Repository
             await _context.BulkUpdateAsync(entities, cancellationToken: cancellationToken);
         }
 
-        public IQueryable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate)
+        public IQueryable<TEntity> FindByAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return GetSet().Where(predicate).AsQueryable();
         }

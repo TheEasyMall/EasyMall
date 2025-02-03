@@ -29,7 +29,7 @@ namespace Maynghien.Infrastructure.Repository
         void BulkInsert(IList<T> items, int packageSize = 1000);
         Task BulkInsert(IList<T> entities, CancellationToken cancellationToken);
         Task BulkUpdate(IList<T> entities, CancellationToken cancellationToken);
-        IQueryable<T> FindBy(Expression<Func<T, bool>> predicate);
+        IQueryable<T> FindByAsync(Expression<Func<T, bool>> predicate);
         IQueryable<T> AsQueryable();
         IQueryable<T> FindByPredicate(Expression<Func<T, bool>> predicate);
         int CountRecordsByPredicate(Expression<Func<T, bool>> predicate);
