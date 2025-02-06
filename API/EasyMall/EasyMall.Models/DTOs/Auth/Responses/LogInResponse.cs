@@ -1,4 +1,4 @@
-﻿namespace EasyMall.DTO.Auth.Responses
+﻿namespace EasyMall.DTOs.DTOs.Auth.Responses
 {
     public class LogInResponse
     {

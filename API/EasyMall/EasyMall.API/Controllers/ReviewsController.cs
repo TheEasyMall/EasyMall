@@ -1,4 +1,4 @@
-﻿using EasyMall.DTO;
+﻿using EasyMall.DTOs.DTOs;
 using EasyMall.Services.Interfaces;
 using MayNghien.Infrastructure.Request.Base;
 using Microsoft.AspNetCore.Authorization;

@@ -1,5 +1,5 @@
-﻿using EasyMall.DTO.Auth.Requests;
-using EasyMall.DTO.Auth.Responses;
+﻿using EasyMall.DTOs.DTOs.Auth.Requests;
+using EasyMall.DTOs.DTOs.Auth.Responses;
 using MayNghien.Models.Response.Base;
 
 namespace EasyMall.Services.Interfaces

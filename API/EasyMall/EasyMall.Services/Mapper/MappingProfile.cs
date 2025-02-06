@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using EasyMall.DALs.Entities;
-using EasyMall.DTO;
+using EasyMall.DTOs.DTOs;
 
 namespace EasyMall.Services.Mapper
 {

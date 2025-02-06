@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using EasyMall.DALs.Entities;
 using EasyMall.DALs.Repositories.Interfaces;
-using EasyMall.DTO;
+using EasyMall.DTOs.DTOs;
 using EasyMall.Services.Interfaces;
 using LinqKit;
 using MayNghien.Infrastructure.Request.Base;

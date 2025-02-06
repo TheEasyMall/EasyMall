@@ -13,8 +13,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Library\Maynghien.Common\Maynghien.Common.csproj" />
     <ProjectReference Include="..\EasyMall.Commons\EasyMall.Commons.csproj" />
-    <ProjectReference Include="..\EasyMall.DALs\EasyMall.Models.csproj" />
-    <ProjectReference Include="..\EasyMall.Models\EasyMall.DTOs.csproj" />
+    <ProjectReference Include="..\EasyMall.DALs\EasyMall.DALs.csproj" />
+    <ProjectReference Include="..\EasyMall.Models\EasyMall.Models.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
 ﻿using EasyMall.Commons.Enums;
 
-namespace EasyMall.DTO.Auth.Responses
+namespace EasyMall.DTOs.DTOs.Auth.Responses
 {
     public class SignUpResponse
     {

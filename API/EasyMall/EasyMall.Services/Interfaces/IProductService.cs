@@ -1,4 +1,4 @@
-﻿using EasyMall.DTO;
+﻿using EasyMall.DTOs.DTOs;
 using MayNghien.Infrastructure.Request.Base;
 using MayNghien.Models.Response.Base;
 

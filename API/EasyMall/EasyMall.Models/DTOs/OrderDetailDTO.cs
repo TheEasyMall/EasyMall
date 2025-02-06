@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EasyMall.DTO
+namespace EasyMall.DTOs.DTOs
 {
     public class OrderDetailDTO : BaseDto
     {

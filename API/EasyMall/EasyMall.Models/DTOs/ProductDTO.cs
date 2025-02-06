@@ -1,7 +1,7 @@
 ﻿using EasyMall.Commons.Enums;
 using MayNghien.Infrastructure.Models;
 
-namespace EasyMall.DTO
+namespace EasyMall.DTOs.DTOs
 {
     public class ProductDTO : BaseDto
     {

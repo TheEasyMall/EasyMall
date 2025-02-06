@@ -1,6 +1,6 @@
 ﻿using MayNghien.Infrastructure.Models;
 
-namespace EasyMall.DTO
+namespace EasyMall.DTOs.DTOs
 {
     public class CartDTO : BaseDto
     {

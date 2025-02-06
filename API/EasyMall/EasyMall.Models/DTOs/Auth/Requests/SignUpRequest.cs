@@ -1,6 +1,6 @@
 ﻿using EasyMall.Commons.Enums;
 
-namespace EasyMall.DTO.Auth.Requests
+namespace EasyMall.DTOs.DTOs.Auth.Requests
 {
     public class SignUpRequest
     {

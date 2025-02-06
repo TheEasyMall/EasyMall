@@ -1,7 +1,7 @@
 ﻿using EasyMall.DALs.Entities;
 using EasyMall.DALs.Repositories.Interfaces;
-using EasyMall.DTO.Auth.Requests;
-using EasyMall.DTO.Auth.Responses;
+using EasyMall.DTOs.DTOs.Auth.Requests;
+using EasyMall.DTOs.DTOs.Auth.Responses;
 using EasyMall.Services.Interfaces;
 using MayNghien.Models.Response.Base;
 using Microsoft.AspNetCore.Http;
