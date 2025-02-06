@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EasyMall.DALs\EasyMall.DALs.csproj" />
+    <ProjectReference Include="..\EasyMall.DALs\EasyMall.Models.csproj" />
     <ProjectReference Include="..\EasyMall.Services\EasyMall.Services.csproj" />
   </ItemGroup>
 

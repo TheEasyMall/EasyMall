@@ -1,4 +1,4 @@
-﻿using EasyMall.Models.DTOs.Auth.Requests;
+﻿using EasyMall.DTO.Auth.Requests;
 using EasyMall.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

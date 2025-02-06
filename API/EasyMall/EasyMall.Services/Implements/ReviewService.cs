@@ -2,19 +2,13 @@
 using EasyMall.Commons.Enums;
 using EasyMall.DALs.Entities;
 using EasyMall.DALs.Repositories.Interfaces;
-using EasyMall.Models.DTOs;
+using EasyMall.DTO;
 using EasyMall.Services.Interfaces;
 using LinqKit;
 using MayNghien.Infrastructure.Request.Base;
 using MayNghien.Models.Response.Base;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Maynghien.Infrastructure.Helpers.SearchHelper;
 
 namespace EasyMall.Services.Implements

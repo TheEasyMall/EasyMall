@@ -2,7 +2,7 @@
 using EasyMall.Commons.Enums;
 using EasyMall.DALs.Entities;
 using EasyMall.DALs.Repositories.Interfaces;
-using EasyMall.Models.DTOs;
+using EasyMall.DTO;
 using EasyMall.Services.Interfaces;
 using MayNghien.Models.Response.Base;
 using Microsoft.AspNetCore.Http;

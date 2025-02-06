@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace EasyMall.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("tenant")]
     [ApiController]
     public class TenantsController : ControllerBase
     {

@@ -11,13 +11,12 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MySqlServerVersion(new Version(8, 0, 40))
+        new MySqlServerVersion(new Version(8, 0, 41))
     ));
 new ServiceRepoMapping().Mapping(builder);
 builder.Services.AddAutoMapper(typeof(MappingProfile));
@@ -38,18 +37,6 @@ builder.Services.AddCors(options =>
                .AllowCredentials();
     });
 });
-//builder.Services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme);
-
-//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//    .AddJwtBearer(options =>
-//    {
-//        options.TokenValidationParameters = new TokenValidationParameters
-//        {
-//            ValidateIssuerSigningKey = true,
-//            ValidateLifetime = true,
-//            IssuerSigningKeys = new[] { new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])) }
-//        };
-//    });
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
@@ -80,14 +67,9 @@ builder.Services.AddAuthentication(options =>
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["JwtConfig:validIssuer"],
             ValidAudience = builder.Configuration["JwtConfig:validAudience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
         };
     });
-
-//builder.Services.AddIdentityCore<ApplicationUser>()
-//    .AddRoles<IdentityRole>()
-//    .AddEntityFrameworkStores<ApplicationDBContext>()
-//    .AddApiEndpoints();
 
 builder.Services.AddAuthorization();
 

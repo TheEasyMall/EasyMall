@@ -1,11 +1,6 @@
-﻿using EasyMall.Models.DTOs.Auth.Requests;
-using EasyMall.Models.DTOs.Auth.Responses;
+﻿using EasyMall.DTO.Auth.Requests;
+using EasyMall.DTO.Auth.Responses;
 using MayNghien.Models.Response.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EasyMall.Services.Interfaces
 {

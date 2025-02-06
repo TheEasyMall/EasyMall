@@ -1,7 +1,7 @@
 ﻿using EasyMall.DALs.Entities;
 using EasyMall.DALs.Repositories.Interfaces;
-using EasyMall.Models.DTOs.Auth.Requests;
-using EasyMall.Models.DTOs.Auth.Responses;
+using EasyMall.DTO.Auth.Requests;
+using EasyMall.DTO.Auth.Responses;
 using EasyMall.Services.Interfaces;
 using MayNghien.Models.Response.Base;
 using Microsoft.AspNetCore.Http;
@@ -24,7 +24,9 @@ namespace EasyMall.Services.Implements
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly ITenantRepository _tenantRepository;
 
-        public AuthenticationService(IConfiguration config, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IHttpContextAccessor contextAccessor, ITenantRepository tenantRepository)
+        public AuthenticationService(IConfiguration config, UserManager<ApplicationUser> userManager, 
+            RoleManager<IdentityRole> roleManager, IHttpContextAccessor contextAccessor, 
+            ITenantRepository tenantRepository)
         {
             _config = config;
             _userManager = userManager;
