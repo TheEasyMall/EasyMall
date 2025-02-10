@@ -1,14 +1,8 @@
 ﻿using MayNghien.Infrastructure.Models;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace EasyMall.DTOs.DTOs
+namespace EasyMall.Models.DTOs.Response
 {
-    public class OrderDetailDTO : BaseDto
+    public class OrderDetailResponse : BaseDto
     {
         public int Quantity { get; set; }
         public double TotalAmount { get; set; }

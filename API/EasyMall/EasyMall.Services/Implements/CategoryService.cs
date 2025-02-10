@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using EasyMall.DALs.Entities;
 using EasyMall.DALs.Repositories.Interfaces;
-using EasyMall.DTOs.DTOs;
+using EasyMall.Models.DTOs.Request;
+using EasyMall.Models.DTOs.Response;
 using EasyMall.Services.Interfaces;
 using LinqKit;
 using MayNghien.Infrastructure.Request.Base;
@@ -32,15 +33,16 @@ namespace EasyMall.Services.Implements
             _userManager = userManager;
         }
 
-        public AppResponse<List<CategoryDTO>> GetByPresent()
+        public AppResponse<List<CategoryResponse>> GetByPresent()
         {
-            var result = new AppResponse<List<CategoryDTO>>();
+            var result = new AppResponse<List<CategoryResponse>>();
             try
             {
-                var categories = _categoryRepository.FindByAsync(x => x.IsPresent == true).Include(x => x.Products).ToList();
-                var dtos = _mapper.Map<List<CategoryDTO>>(categories);
+                var categories = _categoryRepository.FindByAsync(x => x.IsPresent == true && x.IsDeleted == false)
+                    .Include(x => x.Products).ToList();
+                var dtos = _mapper.Map<List<CategoryResponse>>(categories);
                 if (categories == null || !categories.Any())
-                    result.BuildError("Category not found");
+                    result.BuildError("Category not found or deleted");
                 else
                     result.BuildResult(dtos);
             }
@@ -51,16 +53,35 @@ namespace EasyMall.Services.Implements
             return result;
         }
 
-        public AppResponse<CategoryDTO> GetById(Guid id)
+        public AppResponse<CategoryResponse> GetById(Guid id)
         {
-            var result = new AppResponse<CategoryDTO>();
+            var result = new AppResponse<CategoryResponse>();
             try
             {
-                var category = _categoryRepository.FindByAsync(x => x.Id == id).Include(x => x.Products).First();
-                var dto = _mapper.Map<CategoryDTO>(category);
+                var category = _categoryRepository.Get(id);
                 if (category == null || category.IsDeleted == true)
-                    result.BuildError("Category not found");
-                result.BuildResult(dto);
+                    return result.BuildError("Category not found or deleted");
+
+                var data = new CategoryResponse
+                {
+                    Id = id,
+                    Name = category!.Name,
+                    Description = category.Description,
+                    IsPresent = category.IsPresent,
+                    Products = _productRepository.FindByAsync(x => x.CategoryId == category.Id)
+                        .Select(x => new ProductResponse
+                        {
+                            Id = x.Id,
+                            Name = x.Name,
+                            Description = x.Description,
+                            Price = x.Price,
+                            Quantity = x.Quantity,
+                            Address = x.Address,
+                            CategoryId = category.Id,
+                            CategoryName = category.Name,
+                        }).ToList()
+                };
+                result.BuildResult(data);
             }
             catch (Exception ex)
             {
@@ -69,9 +90,35 @@ namespace EasyMall.Services.Implements
             return result;
         }
 
-        public async Task<AppResponse<CategoryDTO>> Create(CategoryDTO request)
+        public AppResponse<List<ProductResponse>> GetListProductByCategoryId(Guid categoryId)
         {
-            var result = new AppResponse<CategoryDTO>();
+            var result = new AppResponse<List<ProductResponse>>();
+            try
+            {
+                var data = _productRepository.FindByAsync(x => x.CategoryId == categoryId && x.IsDeleted == false)
+                    .Include(x => x.Category).Select(x => new ProductResponse
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        Description = x.Description,
+                        Price = x.Price,
+                        Quantity = x.Quantity,
+                        Address = x.Address,
+                        CategoryId = categoryId,
+                        CategoryName = x.Category!.Name,
+                    }).ToList();
+                result.BuildResult(data);
+            }
+            catch (Exception ex)
+            {
+                result.BuildError(ex.Message + " " + ex.StackTrace);
+            }
+            return result;
+        }
+
+        public async Task<AppResponse<CategoryResponse>> Create(CategoryRequest request)
+        {
+            var result = new AppResponse<CategoryResponse>();
             try
             {
                 var user = await _userManager.FindByEmailAsync(_contextAccessor.HttpContext?.User.Identity?.Name!);
@@ -83,25 +130,10 @@ namespace EasyMall.Services.Implements
                 newCategory.CreatedOn = DateTime.UtcNow;
                 newCategory.CreatedBy = user?.Email;
                 newCategory.TenantId = user?.TenantId;
+                _categoryRepository.Add(newCategory);
 
-                var newListProduct = new List<Product>();
-                foreach (var product in newListProduct)
-                {
-                    product.Id = Guid.NewGuid();
-                    product.Name = product.Name;
-                    product.Description = product.Description;
-                    product.Price = product.Price;
-                    product.Quantity = product.Quantity;
-                    product.Address = product.Address;
-                    product.CreatedOn = DateTime.UtcNow;
-                    product.CreatedBy = user?.Email;
-                    product.CategoryId = newCategory.Id;
-                    newCategory.TenantId = user?.TenantId;
-                    newListProduct.Add(product);
-                }
-
-                _categoryRepository.AddProductToCategory(newCategory, newListProduct);
-                result.BuildResult(request, "Product created successfully");
+                var response = _mapper.Map<CategoryResponse>(newCategory);
+                result.BuildResult(response, "Product created successfully");
             }
             catch (Exception ex)
             {
@@ -110,80 +142,43 @@ namespace EasyMall.Services.Implements
             return result;
         }
 
-        public AppResponse<CategoryDTO> Update(CategoryDTO request)
+        public AppResponse<CategoryResponse> Update(CategoryRequest request)
         {
-            var result = new AppResponse<CategoryDTO>();
+            var result = new AppResponse<CategoryResponse>();
             try
             {
                 var user = _contextAccessor.HttpContext?.User.Identity?.Name!;
-                var category = _categoryRepository.FindByAsync(x => x.Id == request.Id).Include(x => x.Products).First();
-                if (category == null)
-                    return result.BuildError("Category not found");
-
-                var product = _productRepository.FindByAsync(x => x.CategoryId == category.Id).ToList();
-                product.ForEach(x =>
-                {
-                    var dto = request.Products?.FirstOrDefault(dto => dto.Id == x.Id);
-                    if (dto == null)
-                        x.IsDeleted = true;
-                    else
-                    {
-                        var change = AreProductsEqual(dto, x);
-                        if (!change)
-                        {
-                            x.IsDeleted = false;
-                            x.Name = dto.Name;
-                            x.Description = dto.Description;
-                            x.Price = dto.Price;
-                            x.Quantity = dto.Quantity;
-                            x.Address = dto.Address;
-                            x.CreatedBy = user;
-                            x.CreatedOn = DateTime.UtcNow;
-                        }
-                    }
-                });
-
-                var newListProduct = new List<Product>();
-                var newProducts = request.Products?.Where(x => x.Id == null).ToList();
-                newProducts?.ForEach(x =>
-                {
-                    var newProduct = _mapper.Map<Product>(x);
-                    newProduct.Id = Guid.NewGuid();
-                    newProduct.Name = x.Name;
-                    newProduct.Description = x.Description;
-                    newProduct.Price = x.Price;
-                    newProduct.Quantity = x.Quantity;
-                    newProduct.Address = x.Address;
-                    newProduct.CategoryId = category.Id;
-                    newProduct.CreatedBy = user;
-                    newProduct.CreatedOn = DateTime.UtcNow;
-                    newListProduct.Add(newProduct);
-                });
+                var category = _categoryRepository.Get(request.Id!.Value);
+                if (category == null || category.IsDeleted == true)
+                    return result.BuildError("Category not found or deleted");
 
                 category.Name = request.Name;
                 category.Description = request.Description;
+                category.IsPresent = request.IsPresent;
                 category.Modifiedby = user;
                 category.ModifiedOn = DateTime.UtcNow;
+                _categoryRepository.Edit(category);
 
-                _categoryRepository.UpdateProductOnCategory(category, product, newListProduct);
-                result.BuildResult(request);
+                var response = _mapper.Map<CategoryResponse>(category);
+                response.Products = _productRepository.FindByAsync(x => x.CategoryId == category.Id)
+                    .Select(x => new ProductResponse
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        Description = x.Description,
+                        Price = x.Price,
+                        Quantity = x.Quantity,
+                        Address = x.Address,
+                        CategoryId = category.Id,
+                        CategoryName = category.Name,
+                    }).ToList();
+                result.BuildResult(response, "Category updated successfully");
             }
             catch (Exception ex)
             {
                 result.BuildError(ex.Message + " " + ex.StackTrace);
             }
             return result;
-        }
-
-        private bool AreProductsEqual(ProductDTO productDTO, Product product)
-        {
-            if (productDTO == null || product == null)
-                return false;
-            return productDTO.Name == product.Name &&
-                productDTO.Description == product.Description &&
-                productDTO.Price == product.Price &&
-                productDTO.Quantity == product.Quantity &&
-                productDTO.Address == product.Address;
         }
 
         public AppResponse<string> Delete(Guid id)
@@ -196,7 +191,7 @@ namespace EasyMall.Services.Implements
                     result.BuildError("Category not found");
                 category!.IsDeleted = true;
                 _categoryRepository.Edit(category);
-                result.BuildResult("Delete category successfully");
+                result.BuildResult("Category deleted successfully");
             }
             catch (Exception ex)
             {
@@ -205,9 +200,9 @@ namespace EasyMall.Services.Implements
             return result;
         }
 
-        public AppResponse<SearchResponse<CategoryDTO>> Search(SearchRequest request)
+        public AppResponse<SearchResponse<CategoryResponse>> Search(SearchRequest request)
         {
-            var result = new AppResponse<SearchResponse<CategoryDTO>>();
+            var result = new AppResponse<SearchResponse<CategoryResponse>>();
             try
             {
                 var query = BuildFilterExpression(request.Filters!);
@@ -222,8 +217,8 @@ namespace EasyMall.Services.Implements
                 int pageSize = request.PageSize ?? 1;
                 int startIndex = (pageIndex - 1) * pageSize;
                 var categoryList = categories.Skip(startIndex).Take(pageSize).ToList();
-                var dtoList = _mapper.Map<List<CategoryDTO>>(categoryList);
-                var searchResponse = new SearchResponse<CategoryDTO>
+                var dtoList = _mapper.Map<List<CategoryResponse>>(categoryList);
+                var searchResponse = new SearchResponse<CategoryResponse>
                 {
                     TotalRows = numOfRecords,
                     TotalPages = CalculateNumOfPages(numOfRecords, pageSize),

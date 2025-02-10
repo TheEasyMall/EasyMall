@@ -2,7 +2,8 @@
 using EasyMall.Commons.Enums;
 using EasyMall.DALs.Entities;
 using EasyMall.DALs.Repositories.Interfaces;
-using EasyMall.DTOs.DTOs;
+using EasyMall.Models.DTOs.Request;
+using EasyMall.Models.DTOs.Response;
 using EasyMall.Services.Interfaces;
 using MayNghien.Models.Response.Base;
 using Microsoft.AspNetCore.Http;
@@ -32,15 +33,15 @@ namespace EasyMall.Services.Implements
             _productRepository = productRepository;
         }
 
-        public async Task<AppResponse<OrderDTO>> Create(OrderDTO request)
+        public async Task<AppResponse<OrderResponse>> Create(OrderRequest request)
         {
-            var result = new AppResponse<OrderDTO>();
+            var result = new AppResponse<OrderResponse>();
             try
             {
                 var user = await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext?.User.Identity?.Name!);
                 var carts = _cartRepository.FindByAsync(c => request.CartIds!.Contains(c.Id)
                                                 && c.TenantId == user!.TenantId && c.IsDeleted == false)
-                                            .Include(c => c.Product).ToList();
+                                            .Include(c => c.Product).ThenInclude(c => c!.ProductPrices).ToList();
                 var newOrder = _mapper.Map<Order>(request);
                 newOrder.Id = Guid.NewGuid();
                 newOrder.ProductAddress = request.ProductAddress;
@@ -51,8 +52,7 @@ namespace EasyMall.Services.Implements
                 if (newOrder.ProductAddress == Address.HaNoi || newOrder.ProductAddress == Address.HoChiMinh || newOrder.ProductAddress == Address.DaNang
                     || newOrder.ProductAddress == Address.HaiPhong || newOrder.ProductAddress == Address.CanTho)
                     newOrder.ShippingMethod = ShippingMethod.Truck;
-                else if (newOrder.ProductAddress == Address.NewYork || newOrder.ProductAddress == Address.LosAngeles || newOrder.ProductAddress == Address.London
-                    || newOrder.ProductAddress == Address.Paris || newOrder.ProductAddress == Address.Tokyo)
+                else if (newOrder.ProductAddress == Address.NuocNgoai)
                     newOrder.ShippingMethod = ShippingMethod.Plane;
 
                 var totalAmount = carts.Sum(c => c.TotalAmount);
@@ -87,9 +87,10 @@ namespace EasyMall.Services.Implements
                     orderDetails.Add(orderDetail);
                 }
                 newOrder.OrderDetails = orderDetails;
-
                 _orderRepository.Add(newOrder);
-                result.BuildResult(request, "Order created successfully");
+
+                var response = _mapper.Map<OrderResponse>(request);
+                result.BuildResult(response, "Order created successfully");
             }
             catch (Exception ex)
             {

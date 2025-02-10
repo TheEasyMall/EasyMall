@@ -1,8 +1,7 @@
-﻿using EasyMall.DTOs.DTOs;
+﻿using EasyMall.Models.DTOs.Request;
 using EasyMall.Services.Interfaces;
 using MayNghien.Infrastructure.Request.Base;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EasyMall.API.Controllers
@@ -20,7 +19,7 @@ namespace EasyMall.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(ReviewDTO request)
+        public async Task<IActionResult> Create(ReviewRequest request)
         {
             var result = await _reviewService.Create(request);
             return Ok(result);

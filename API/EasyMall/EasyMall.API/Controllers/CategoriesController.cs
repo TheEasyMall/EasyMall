@@ -1,8 +1,7 @@
-﻿using EasyMall.DTOs.DTOs;
+﻿using EasyMall.Models.DTOs.Request;
 using EasyMall.Services.Interfaces;
 using MayNghien.Infrastructure.Request.Base;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EasyMall.API.Controllers
@@ -28,21 +27,30 @@ namespace EasyMall.API.Controllers
         }
 
         [HttpGet]
+        [Route("{id}")]
         public IActionResult GetById(Guid id)
         {
             var result = _categoryService.GetById(id);
             return Ok(result);
         }
 
+        [HttpGet]
+        [Route("list-product/{categoryId}")]
+        public IActionResult GetListProductByCategoryId(Guid categoryId)
+        {
+            var result = _categoryService.GetListProductByCategoryId(categoryId);
+            return Ok(result);
+        }
+
         [HttpPost]
-        public async Task<IActionResult> Create(CategoryDTO request)
+        public async Task<IActionResult> Create(CategoryRequest request)
         {
             var result = await _categoryService.Create(request);
             return Ok(result);
         }
 
         [HttpPut]
-        public IActionResult Update(CategoryDTO request)
+        public IActionResult Update(CategoryRequest request)
         {
             var result = _categoryService.Update(request);
             return Ok(result);

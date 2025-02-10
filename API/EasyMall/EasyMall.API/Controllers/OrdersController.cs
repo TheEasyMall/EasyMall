@@ -1,7 +1,6 @@
-﻿using EasyMall.DTOs.DTOs;
+﻿using EasyMall.Models.DTOs.Request;
 using EasyMall.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EasyMall.API.Controllers
@@ -19,7 +18,7 @@ namespace EasyMall.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(OrderDTO request)
+        public async Task<IActionResult> Create(OrderRequest request)
         {
             var result = await _orderService.Create(request);
             return Ok(result);

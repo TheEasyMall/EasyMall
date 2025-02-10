@@ -1,8 +1,6 @@
-﻿using EasyMall.DALs.Entities;
-using EasyMall.DTOs.DTOs;
+﻿using EasyMall.Models.DTOs.Request;
 using EasyMall.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EasyMall.API.Controllers
@@ -20,14 +18,14 @@ namespace EasyMall.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(ProductPriceDTO request)
+        public async Task<IActionResult> Create(ProductPriceRequest request)
         {
             var result = await _productPriceService.Create(request);
             return Ok(result);
         }
 
         [HttpPut]
-        public IActionResult Update(ProductPriceDTO request)
+        public IActionResult Update(ProductPriceRequest request)
         {
             var result = _productPriceService.Update(request);
             return Ok(result);

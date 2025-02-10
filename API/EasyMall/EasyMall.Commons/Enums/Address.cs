@@ -1,4 +1,6 @@
 ﻿
+using System.ComponentModel;
+
 namespace EasyMall.Commons.Enums
 {
     public enum Address
@@ -8,10 +10,6 @@ namespace EasyMall.Commons.Enums
         DaNang = 2,
         HaiPhong = 3,
         CanTho = 4,
-        NewYork = 5,
-        LosAngeles = 6,
-        London = 7,
-        Paris = 8,
-        Tokyo = 9
+        NuocNgoai = 5,
     }
 }

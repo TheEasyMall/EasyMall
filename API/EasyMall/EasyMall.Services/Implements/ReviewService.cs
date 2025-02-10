@@ -3,6 +3,8 @@ using EasyMall.Commons.Enums;
 using EasyMall.DALs.Entities;
 using EasyMall.DALs.Repositories.Interfaces;
 using EasyMall.DTOs.DTOs;
+using EasyMall.Models.DTOs.Request;
+using EasyMall.Models.DTOs.Response;
 using EasyMall.Services.Interfaces;
 using LinqKit;
 using MayNghien.Infrastructure.Request.Base;
@@ -32,14 +34,14 @@ namespace EasyMall.Services.Implements
             _productRepository = productRepository;
         }
 
-        public async Task<AppResponse<ReviewDTO>> Create(ReviewDTO request)
+        public async Task<AppResponse<ReviewResponse>> Create(ReviewRequest request)
         {
-            var result = new AppResponse<ReviewDTO>();
+            var result = new AppResponse<ReviewResponse>();
             try
             {
                 var user = await _userManager.FindByEmailAsync(_contextAccessor.HttpContext?.User.Identity?.Name!);
-                var product = _productRepository.FindByAsync(p => p.Id == request.ProductId).ToList();
-                if (product == null)
+                var products = _productRepository.FindByAsync(p => p.Id == request.ProductId).ToList();
+                if (products == null)
                     result.BuildError("Product not found");
 
                 var newReview = new Review
@@ -48,15 +50,20 @@ namespace EasyMall.Services.Implements
                     Rating = request.Rating,
                     Comment = request.Comment,
                     ProductId = request.ProductId,
-                    ProductName = product.ToList().First().Name,
+                    ProductName = products!.ToList().First().Name,
                     TenantId = user?.TenantId,
                     CreatedOn = DateTime.UtcNow,
                     CreatedBy = user?.Email,
                 };
-
                 _reviewRepository.Add(newReview);
-                var reviewDto = _mapper.Map<ReviewDTO>(newReview);
-                result.BuildResult(reviewDto, "Review created successfully.");
+
+                var response = _mapper.Map<ReviewResponse>(newReview);
+                if (newReview.ProductId.HasValue)
+                {
+                    var product = _productRepository.FindByAsync(c => c.Id == newReview.ProductId.Value).FirstOrDefault();
+                    response.ProductName = product?.Name!;
+                }
+                result.BuildResult(response, "Review created successfully.");
             }
             catch (Exception ex)
             {
@@ -65,9 +72,9 @@ namespace EasyMall.Services.Implements
             return result;
         }
 
-        public AppResponse<SearchResponse<ReviewDTO>> Search(SearchRequest request)
+        public AppResponse<SearchResponse<ReviewResponse>> Search(SearchRequest request)
         {
-            var result = new AppResponse<SearchResponse<ReviewDTO>>();
+            var result = new AppResponse<SearchResponse<ReviewResponse>>();
             try
             {
                 var query = BuildFilterExpression(request.Filters!);
@@ -82,8 +89,8 @@ namespace EasyMall.Services.Implements
                 int pageSize = request.PageSize ?? 1;
                 int startIndex = (pageIndex - 1) * pageSize;
                 var reviewList = reviews.Skip(startIndex).Take(pageSize);
-                var dtoList = _mapper.Map<List<ReviewDTO>>(reviewList);
-                var searchResponse = new SearchResponse<ReviewDTO>
+                var dtoList = _mapper.Map<List<ReviewResponse>>(reviewList);
+                var searchResponse = new SearchResponse<ReviewResponse>
                 {
                     TotalRows = numOfRecords,
                     TotalPages = CalculateNumOfPages(numOfRecords, pageSize),

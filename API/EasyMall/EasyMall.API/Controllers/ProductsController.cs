@@ -1,8 +1,7 @@
-﻿using EasyMall.DTOs.DTOs;
+﻿using EasyMall.Models.DTOs.Request;
 using EasyMall.Services.Interfaces;
 using MayNghien.Infrastructure.Request.Base;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EasyMall.API.Controllers
@@ -27,14 +26,14 @@ namespace EasyMall.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(ProductDTO request)
+        public async Task<IActionResult> Create(ProductRequest request)
         {
             var result = await _productService.Create(request);
             return Ok(result);
         }
 
         [HttpPut]
-        public IActionResult Update(ProductDTO request)
+        public IActionResult Update(ProductRequest request)
         {
             var result = _productService.Update(request);
             return Ok(result);

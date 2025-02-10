@@ -1,13 +1,11 @@
 ﻿using MayNghien.Infrastructure.Models;
 
-namespace EasyMall.DTOs.DTOs
+namespace EasyMall.Models.DTOs.Request
 {
-    public class CategoryDTO : BaseDto
+    public class CategoryRequest : BaseDto
     {
         public string Name { get; set; }
         public string Description { get; set; }
         public bool IsPresent { get; set; }
-
-        public List<ProductDTO>? Products { get; set; }
     }
 }

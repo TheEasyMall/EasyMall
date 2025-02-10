@@ -1,4 +1,4 @@
-﻿using EasyMall.DTOs.DTOs;
+﻿using EasyMall.Models.DTOs.Request;
 using EasyMall.Services.Interfaces;
 using MayNghien.Infrastructure.Request.Base;
 using Microsoft.AspNetCore.Authorization;
@@ -20,7 +20,7 @@ namespace EasyMall.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddToCart(CartDTO request)
+        public async Task<IActionResult> AddToCart(CartRequest request)
         {
             var result = await _cartService.AddToCart(request);
             return Ok(result);
@@ -37,13 +37,6 @@ namespace EasyMall.API.Controllers
         public IActionResult DeleteFromCart(Guid productId)
         {
             var result = _cartService.DeleteFromCart(productId);
-            return Ok(result);
-        }
-
-        [HttpPost("search")]
-        public IActionResult Search(SearchRequest request)
-        {
-            var result = _cartService.Search(request);
             return Ok(result);
         }
     }

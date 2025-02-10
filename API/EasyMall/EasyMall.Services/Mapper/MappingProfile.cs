@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using EasyMall.DALs.Entities;
 using EasyMall.DTOs.DTOs;
+using EasyMall.Models.DTOs.Request;
+using EasyMall.Models.DTOs.Response;
 
 namespace EasyMall.Services.Mapper
 {
@@ -8,54 +10,42 @@ namespace EasyMall.Services.Mapper
     {
         public MappingProfile()
         {
-            TenantMap();
-            CategoryMap();
-            ProductMap();
-            ProductPriceMap();
-            CartMap();
-            OrderMap();
-            OrderDetailMap();
-            ReviewMap();
+            CreateMap();
         }
 
-        public void TenantMap()
+        public void CreateMap()
         {
             CreateMap<Tenant, TenantDTO>().ReverseMap();
-        }
 
-        public void CategoryMap()
-        {
-            CreateMap<Category, CategoryDTO>().ReverseMap();
-        }
+            #region Entity - Request
+            CreateMap<Category, CategoryRequest>().ReverseMap();
+            CreateMap<Product, ProductRequest>().ReverseMap();
+            CreateMap<ProductPrice, ProductPriceRequest>().ReverseMap();
+            CreateMap<Cart, CartRequest>().ReverseMap();
+            CreateMap<Order, OrderRequest>().ReverseMap();
+            CreateMap<OrderDetail, OrderDetailRequest>().ReverseMap();
+            CreateMap<Review, ReviewRequest>().ReverseMap();
+            #endregion
 
-        public void ProductMap()
-        {
-            CreateMap<Product, ProductDTO>().ReverseMap();
-        }
+            #region Entity - Response
+            CreateMap<Category,CategoryResponse>().ReverseMap();
+            CreateMap<Product, ProductResponse>().ReverseMap();
+            CreateMap<ProductPrice, ProductPriceResponse>().ReverseMap();
+            CreateMap<Cart, CartResponse>().ReverseMap();
+            CreateMap<Order, OrderResponse>().ReverseMap();
+            CreateMap<OrderDetail, OrderDetailResponse>().ReverseMap();
+            CreateMap<Review, ReviewResponse>().ReverseMap();
+            #endregion
 
-        public void ProductPriceMap()
-        {
-            CreateMap<ProductPrice, ProductPriceDTO>().ReverseMap();
-        }
-
-        public void CartMap() 
-        {
-            CreateMap<Cart, CartDTO>().ReverseMap();
-        }
-
-        public void OrderMap()
-        {
-            CreateMap<Order, OrderDTO>().ReverseMap();
-        }
-
-        public void OrderDetailMap()
-        {
-            CreateMap<OrderDetail, OrderDetailDTO>().ReverseMap();
-        }   
-
-        public void ReviewMap()
-        {
-            CreateMap<Review, ReviewDTO>().ReverseMap();
+            #region Request - Response
+            CreateMap<CategoryRequest, CategoryResponse>().ReverseMap();
+            CreateMap<ProductRequest, ProductResponse>().ReverseMap();
+            CreateMap<ProductPriceRequest, ProductPriceResponse>().ReverseMap();
+            CreateMap<CartRequest, CartResponse>().ReverseMap();
+            CreateMap<OrderRequest, OrderResponse>().ReverseMap();
+            CreateMap<OrderDetailRequest, OrderDetailResponse>().ReverseMap();
+            CreateMap<ReviewRequest, ReviewResponse>().ReverseMap();
+            #endregion
         }
     }
 }

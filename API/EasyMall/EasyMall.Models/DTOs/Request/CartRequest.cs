@@ -1,12 +1,11 @@
 ﻿using MayNghien.Infrastructure.Models;
 
-namespace EasyMall.DTOs.DTOs
+namespace EasyMall.Models.DTOs.Request
 {
-    public class CartDTO : BaseDto
+    public class CartRequest : BaseDto
     {
         public int Quantity { get; set; }
         public string Type { get; set; }
-        public double TotalAmount { get; set; }
         public Guid? ProductId { get; set; }
         public Guid? ProductPriceId { get; set; }
     }

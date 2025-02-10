@@ -1,13 +1,12 @@
 ﻿using EasyMall.Commons.Enums;
 using MayNghien.Infrastructure.Models;
 
-namespace EasyMall.DTOs.DTOs
+namespace EasyMall.Models.DTOs.Request
 {
-    public class ReviewDTO : BaseDto
+    public class ReviewRequest : BaseDto
     {
         public Ratings Rating { get; set; }
         public string? Comment { get; set; }
         public Guid? ProductId { get; set; }
-        public string ProductName { get; set; }
     }
 }
