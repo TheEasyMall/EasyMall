@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EasyMall.DALs.Entities
 {
-    public class ProductPrice : BaseEntity
+    public class Variant : BaseEntity
     {
         public string? Type { get; set; }
         public double Price { get; set; }

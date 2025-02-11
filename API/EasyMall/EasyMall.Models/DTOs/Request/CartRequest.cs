@@ -7,6 +7,6 @@ namespace EasyMall.Models.DTOs.Request
         public int Quantity { get; set; }
         public string Type { get; set; }
         public Guid? ProductId { get; set; }
-        public Guid? ProductPriceId { get; set; }
+        public Guid? VariantId { get; set; }
     }
 }

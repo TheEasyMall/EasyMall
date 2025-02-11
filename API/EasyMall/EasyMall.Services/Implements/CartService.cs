@@ -7,14 +7,13 @@ using EasyMall.Services.Interfaces;
 using MayNghien.Models.Response.Base;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using static Maynghien.Infrastructure.Helpers.SearchHelper;
 
 namespace EasyMall.Services.Implements
 {
     public class CartService : ICartService
     {
         private readonly IProductRepository _productRepository;
-        private readonly IProductPriceRepository _productPriceRepository;
+        private readonly IVariantRepository _variantRepository;
         private readonly ICartRepository _cartRepository;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -22,14 +21,14 @@ namespace EasyMall.Services.Implements
 
         public CartService(IProductRepository productRepository, ICartRepository cartRepository,
             IMapper mapper, IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, 
-            IProductPriceRepository productPriceRepository)
+            IVariantRepository variantRepository)
         {
             _productRepository = productRepository;
             _cartRepository = cartRepository;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
-            _productPriceRepository = productPriceRepository;
+            _variantRepository = variantRepository;
         }
 
         public async Task<AppResponse<CartResponse>> AddToCart(CartRequest request)
@@ -48,7 +47,7 @@ namespace EasyMall.Services.Implements
                 if (existingCart != null)
                 {
                     existingCart.Quantity += request.Quantity;
-                    existingCart.TotalAmount = CalculateTotalAmount(request.ProductId!.Value, request.ProductPriceId!.Value,
+                    existingCart.TotalAmount = CalculateTotalAmount(request.ProductId!.Value, request.VariantId!.Value,
                         request.Type, existingCart.Quantity);
                     _cartRepository.Delete(existingCart);
                     var updatedCart = new Cart
@@ -59,7 +58,7 @@ namespace EasyMall.Services.Implements
                         Quantity = existingCart.Quantity,
                         TotalAmount = existingCart.TotalAmount,
                         TenantId = user!.TenantId,
-                        ProductPriceId = request.ProductPriceId,
+                        VariantId = request.VariantId,
                         CreatedBy = user.Email,
                         Modifiedby = user.Email,
                         ModifiedOn = DateTime.UtcNow
@@ -68,8 +67,8 @@ namespace EasyMall.Services.Implements
 
                     var response = _mapper.Map<CartResponse>(updatedCart);
                     response.ProductName = product.Name;
-                    var productPrice = _productPriceRepository.FindByAsync(p => p.Id == request.ProductPriceId).FirstOrDefault();
-                    response.ProductPriceName = productPrice?.Type!;
+                    var productPrice = _variantRepository.FindByAsync(p => p.Id == request.VariantId).FirstOrDefault();
+                    response.VariantName = productPrice?.Type!;
                     result.BuildResult(response, "Cart updated successfully");
                 }
                 else
@@ -80,10 +79,10 @@ namespace EasyMall.Services.Implements
                         ProductId = request.ProductId,
                         Type = request.Type,
                         Quantity = request.Quantity,
-                        TotalAmount = CalculateTotalAmount(request.ProductId!.Value, request.ProductPriceId!.Value,
+                        TotalAmount = CalculateTotalAmount(request.ProductId!.Value, request.VariantId!.Value,
                             request.Type, request.Quantity),
                         TenantId = user!.TenantId,
-                        ProductPriceId = request.ProductPriceId,
+                        VariantId = request.VariantId,
                         CreatedBy = user?.Email,
                         CreatedOn = DateTime.UtcNow
                     };
@@ -91,8 +90,8 @@ namespace EasyMall.Services.Implements
 
                     var response = _mapper.Map<CartResponse>(newCart);
                     response.ProductName = product.Name;
-                    var productPrice = _productPriceRepository.FindByAsync(p => p.Id == request.ProductPriceId).FirstOrDefault();
-                    response.ProductPriceName = productPrice?.Type!;
+                    var productPrice = _variantRepository.FindByAsync(p => p.Id == request.VariantId).FirstOrDefault();
+                    response.VariantName = productPrice?.Type!;
                     result.BuildResult(response, "Added product to cart successfully");
                 }
             }
@@ -103,15 +102,15 @@ namespace EasyMall.Services.Implements
             return result;
         }
 
-        private double CalculateTotalAmount(Guid productId, Guid productPriceId, string type, int quantity)
+        private double CalculateTotalAmount(Guid productId, Guid variantId, string type, int quantity)
         {
             var product = _productRepository.FindByAsync(p => p.Id == productId).FirstOrDefault();
             if (product == null || product.IsDeleted == true)
                 throw new Exception("Product not found or deleted");
 
-            var productPrice = _productPriceRepository.FindByAsync(p => p.Id == productPriceId && p.Type == type).FirstOrDefault();
+            var productPrice = _variantRepository.FindByAsync(p => p.Id == variantId && p.Type == type).FirstOrDefault();
             if (productPrice == null || productPrice.IsDeleted == true)
-                throw new Exception("Product price not found or deleted for the given type");
+                throw new Exception("Variant not found or deleted for the given type");
             return (product.Price + productPrice.Price) * quantity;
         }
 
@@ -127,7 +126,7 @@ namespace EasyMall.Services.Implements
                 if (cart.Quantity > 1)
                 {
                     cart.Quantity -= 1;
-                    cart.TotalAmount = CalculateTotalAmount(cart.ProductId!.Value, cart.ProductPriceId!.Value, cart.Type, cart.Quantity);
+                    cart.TotalAmount = CalculateTotalAmount(cart.ProductId!.Value, cart.VariantId!.Value, cart.Type, cart.Quantity);
                     _cartRepository.Edit(cart);
                     result.BuildResult("Product quantity decreased successfully");
                 }

@@ -5,9 +5,9 @@ using Maynghien.Infrastructure.Repository;
 
 namespace EasyMall.DALs.Repositories.Implements
 {
-    public class ProductPriceRepository : GenericRepository<ProductPrice, ApplicationDbContext, ApplicationUser>, IProductPriceRepository
+    public class VariantRepository : GenericRepository<Variant, ApplicationDbContext, ApplicationUser>, IVariantRepository
     {
-        public ProductPriceRepository(ApplicationDbContext unitOfWork) : base(unitOfWork)
+        public VariantRepository(ApplicationDbContext unitOfWork) : base(unitOfWork)
         {
         }
     }

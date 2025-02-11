@@ -27,7 +27,7 @@ namespace EasyMall.DALs.Entities
 
         public ICollection<Cart>? Carts { get; set; }
         public ICollection<Review>? Reviews { get; set; }
-        public ICollection<ProductPrice>? ProductPrices { get; set; }
+        public ICollection<Variant>? Variants { get; set; }
         public ICollection<OrderDetail>? OrderDetails { get; set; }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using EasyMall.DALs.Entities;
-using EasyMall.DALs.Repositories.Implements;
 using EasyMall.DALs.Repositories.Interfaces;
 using EasyMall.Models.DTOs.Request;
 using EasyMall.Models.DTOs.Response;
@@ -11,40 +10,40 @@ using Microsoft.AspNetCore.Identity;
 
 namespace EasyMall.Services.Implements
 {
-    public class ProductPriceService : IProductPriceService
+    public class VariantService : IVariantService
     {
-        private readonly IProductPriceRepository _productPriceRepository;
+        private readonly IVariantRepository _variantRepository;
         private readonly IProductRepository _productRepository;
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ProductPriceService(IProductPriceRepository productPriceRepository, IMapper mapper,
+        public VariantService(IVariantRepository variantRepository, IMapper mapper,
             UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor, 
             IProductRepository productRepository)
         {
-            _productPriceRepository = productPriceRepository;
+            _variantRepository = variantRepository;
             _mapper = mapper;
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
             _productRepository = productRepository;
         }
 
-        public async Task<AppResponse<ProductPriceResponse>> Create(ProductPriceRequest request)
+        public async Task<AppResponse<VariantResponse>> Create(VariantRequest request)
         {
-            var result = new AppResponse<ProductPriceResponse>();
+            var result = new AppResponse<VariantResponse>();
             try
             {
                 var user = await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext?.User.Identity?.Name!);
-                var newPrice = _mapper.Map<ProductPrice>(request);
+                var newPrice = _mapper.Map<Variant>(request);
                 newPrice.Id = Guid.NewGuid();
                 newPrice.Type = request.Type;
                 newPrice.Price = request.Price;
                 newPrice.CreatedBy = user?.Email;
                 newPrice.CreatedOn = DateTime.UtcNow;
-                _productPriceRepository.Add(newPrice);
+                _variantRepository.Add(newPrice);
 
-                var response = _mapper.Map<ProductPriceResponse>(request);
+                var response = _mapper.Map<VariantResponse>(request);
                 if (newPrice.ProductId.HasValue)
                 {
                     var product = _productRepository.FindByAsync(c => c.Id == newPrice.ProductId.Value)
@@ -65,12 +64,12 @@ namespace EasyMall.Services.Implements
             var result = new AppResponse<string>();
             try
             {
-                var productPrice = _productPriceRepository.FindByAsync(p => p.Id == id).First();
+                var productPrice = _variantRepository.FindByAsync(p => p.Id == id).First();
                 if (productPrice == null || productPrice.IsDeleted == true)
-                    return result.BuildError("Product price not found or deleted");
+                    return result.BuildError("Variant of product not found or deleted");
                 productPrice!.IsDeleted = true;
-                _productPriceRepository.Edit(productPrice);
-                result.BuildResult("Product price deleted successfully");
+                _variantRepository.Edit(productPrice);
+                result.BuildResult("Variant of product deleted successfully");
             }
             catch (Exception ex)
             {
@@ -79,29 +78,29 @@ namespace EasyMall.Services.Implements
             return result;
         }
 
-        public AppResponse<ProductPriceResponse> Update(ProductPriceRequest request)
+        public AppResponse<VariantResponse> Update(VariantRequest request)
         {
-            var result = new AppResponse<ProductPriceResponse>();
+            var result = new AppResponse<VariantResponse>();
             try
             {
                 var user = _httpContextAccessor.HttpContext?.User.Identity?.Name!;
-                var productPrice = _productPriceRepository.FindByAsync(p => p.Id == request.Id).First();
+                var productPrice = _variantRepository.FindByAsync(p => p.Id == request.Id).First();
                 if (productPrice == null || productPrice.IsDeleted == true)
-                    return result.BuildError("Product price not found or deleted");
+                    return result.BuildError("Variant of product not found or deleted");
                 productPrice!.Price = request.Price;
                 productPrice.Type = request.Type;
                 productPrice.Modifiedby = user;
                 productPrice.ModifiedOn = DateTime.UtcNow;
-                _productPriceRepository.Edit(productPrice);
+                _variantRepository.Edit(productPrice);
 
-                var response = _mapper.Map<ProductPriceResponse>(request);
+                var response = _mapper.Map<VariantResponse>(request);
                 if (productPrice.ProductId.HasValue)
                 {
                     var product = _productRepository.FindByAsync(c => c.Id == productPrice.ProductId.Value)
                         .FirstOrDefault();
                     response.ProductName = product?.Name!;
                 }
-                result.BuildResult(response, "Product price updated successfully");
+                result.BuildResult(response, "Variant of product updated successfully");
             }
             catch (Exception ex)
             {

@@ -4,7 +4,7 @@ using Maynghien.Infrastructure.Repository;
 
 namespace EasyMall.DALs.Repositories.Interfaces
 {
-    public interface IProductPriceRepository : IGenericRepository<ProductPrice, ApplicationDbContext, ApplicationUser>
+    public interface IVariantRepository : IGenericRepository<Variant, ApplicationDbContext, ApplicationUser>
     {
     }
 }

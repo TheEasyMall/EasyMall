@@ -4,10 +4,10 @@ using MayNghien.Models.Response.Base;
 
 namespace EasyMall.Services.Interfaces
 {
-    public interface IProductPriceService
+    public interface IVariantService
     {
-        Task<AppResponse<ProductPriceResponse>> Create(ProductPriceRequest request);
-        AppResponse<ProductPriceResponse> Update(ProductPriceRequest request);
+        Task<AppResponse<VariantResponse>> Create(VariantRequest request);
+        AppResponse<VariantResponse> Update(VariantRequest request);
         AppResponse<string> Delete(Guid id);
     }
 }

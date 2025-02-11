@@ -20,7 +20,7 @@ namespace EasyMall.Services.Mapper
             #region Entity - Request
             CreateMap<Category, CategoryRequest>().ReverseMap();
             CreateMap<Product, ProductRequest>().ReverseMap();
-            CreateMap<ProductPrice, ProductPriceRequest>().ReverseMap();
+            CreateMap<Variant, VariantRequest>().ReverseMap();
             CreateMap<Cart, CartRequest>().ReverseMap();
             CreateMap<Order, OrderRequest>().ReverseMap();
             CreateMap<OrderDetail, OrderDetailRequest>().ReverseMap();
@@ -30,7 +30,7 @@ namespace EasyMall.Services.Mapper
             #region Entity - Response
             CreateMap<Category,CategoryResponse>().ReverseMap();
             CreateMap<Product, ProductResponse>().ReverseMap();
-            CreateMap<ProductPrice, ProductPriceResponse>().ReverseMap();
+            CreateMap<Variant, VariantResponse>().ReverseMap();
             CreateMap<Cart, CartResponse>().ReverseMap();
             CreateMap<Order, OrderResponse>().ReverseMap();
             CreateMap<OrderDetail, OrderDetailResponse>().ReverseMap();
@@ -40,7 +40,7 @@ namespace EasyMall.Services.Mapper
             #region Request - Response
             CreateMap<CategoryRequest, CategoryResponse>().ReverseMap();
             CreateMap<ProductRequest, ProductResponse>().ReverseMap();
-            CreateMap<ProductPriceRequest, ProductPriceResponse>().ReverseMap();
+            CreateMap<VariantRequest, VariantResponse>().ReverseMap();
             CreateMap<CartRequest, CartResponse>().ReverseMap();
             CreateMap<OrderRequest, OrderResponse>().ReverseMap();
             CreateMap<OrderDetailRequest, OrderDetailResponse>().ReverseMap();

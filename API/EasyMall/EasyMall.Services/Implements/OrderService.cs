@@ -41,7 +41,7 @@ namespace EasyMall.Services.Implements
                 var user = await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext?.User.Identity?.Name!);
                 var carts = _cartRepository.FindByAsync(c => request.CartIds!.Contains(c.Id)
                                                 && c.TenantId == user!.TenantId && c.IsDeleted == false)
-                                            .Include(c => c.Product).ThenInclude(c => c!.ProductPrices).ToList();
+                                            .Include(c => c.Product).ThenInclude(c => c!.Variants).ToList();
                 var newOrder = _mapper.Map<Order>(request);
                 newOrder.Id = Guid.NewGuid();
                 newOrder.ProductAddress = request.ProductAddress;
